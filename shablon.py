@@ -1,6 +1,5 @@
 import openpyxl
 from openpyxl.styles.borders import Border, Side
-#from openpyxl import Workbook, load_workbook
 
 thick_border = Border(left=Side(style='thin'),
                       right=Side(style='thin'),
@@ -9,15 +8,8 @@ thick_border = Border(left=Side(style='thin'),
 
 
 def shablon(savesheet, sheetfile2):
-    # file2 = openpyxl.open(file1,
-    #                       read_only=True)  # открываем файл
-    # sheetfile2 = file2.active
-    # savebook = openpyxl.Workbook()
-    # savebook.create_sheet(title='Лист1', index=0)
-    # savebook.remove(savebook['Sheet'])
-    # savesheet = savebook.active
     savesheet["B6"] = sheetfile2["B6"].value
-    savesheet.merge_cells('B6:B7')  # соединение ячеек
+    savesheet.merge_cells('B6:B7')
     savesheet["C6"] = sheetfile2["C6"].value
     savesheet.merge_cells('C6:C7')
     savesheet["D6"] = sheetfile2["D6"].value
@@ -44,7 +36,6 @@ def shablon(savesheet, sheetfile2):
     savesheet["I7"] = sheetfile2["I7"].value
     savesheet["J7"] = sheetfile2["J7"].value
     savesheet["K7"] = sheetfile2["K7"].value
-    # установка формата ячеек
     savesheet.row_dimensions[6].height = 60
     savesheet.row_dimensions[7].height = 60
     savesheet.row_dimensions[8].height = 20
@@ -73,13 +64,6 @@ def shablon(savesheet, sheetfile2):
                 horizontal="center", vertical="center", wrap_text=True)
             savesheet[j+1][i].font = openpyxl.styles.Font(
                 bold=False, color="000000", name='Times New Roman', size=10)
-    # создание границ у ячеек
-    # for i in range(1, 17):
-    #     for j in range(5, 7):
-    #         savesheet[j+1][i].border = thick_border
-    # savebook.save("рентабельність.xlsx")
-    # savebook.close()
-    # file2.close()
 
 
 if __name__ == "__main__":

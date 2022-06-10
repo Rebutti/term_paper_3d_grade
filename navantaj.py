@@ -13,8 +13,6 @@ def findgtype(sheet):
     groupname = groupname[:groupname.find(' ')]
     return groupname
 
-# знаходження лекцій практики та лабороторних
-
 
 def findlpl(sheetfile1) -> int:
     letter = 'B'
@@ -33,7 +31,6 @@ def findlpl(sheetfile1) -> int:
             number += 1
 
 
-# знаходження кількості вибіркових дисциплін
 def find_vibir_disc(sheetfile1, obov_disc: int):
     letter = 'B'
     obov_disc = obov_disc+1
@@ -98,7 +95,6 @@ def findatect(sheetfile1, kil_stud, values, sheet):
                 number += 1
         else:
             number += 1
-    # while sheetfile1["B"+str(number)].value != None:
     if flag == False:
         return 0
     counter = 0
@@ -118,7 +114,6 @@ def findatect(sheetfile1, kil_stud, values, sheet):
             continue
         a = b.span()
         atest[0] = atest[0][a[0]:a[1]].replace('(', '').replace(')', '')
-        # print(atest)
         if atest[0] == "ЕК":
             result += int(kil_stud) / \
                 float(values['атест_ЕК']) * \
@@ -141,22 +136,14 @@ def findatect(sheetfile1, kil_stud, values, sheet):
     result += exz_or_icpit
     return result
 
-# sheetfile1 - лист из file1,#sheetfile2 - лист из file2, values - все данные что вводит пользователь, kil_stud - количество студентов
-
 
 def navantaj(sheetfile1, values, kil_stud, sheet, course):
-    print(f"sheet = ", sheet)
-    # знаходимо в якому рядку зчитувати данні про лекції практику та лабораторні роботи
     number1 = findlpl(sheetfile1)
     number = number1[0]
 
-    # кількість тижнів у 1 семестрі
     kil_tij_1_cem = int(str(sheetfile1["O7"].value).strip()[:2])
-    # кількість тижнів у 2 семестрі
     kil_tij_2_cem = int(str(sheetfile1["S7"].value).strip()[:2])
-    # допоміжна змінна для знаходження кількості груп
     kil_groups = sheetfile1["A3"].value.split(" ")
-    # кількість груп
     kilkist_groups = []
     for i in filter(lambda x: str(x).isdigit(), kil_groups):
         kilkist_groups.append(i)
@@ -191,14 +178,11 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course):
     exzamens = [int(i) for i in exzamens]
     exzamens = sum(exzamens)
     zaliki = [int(i) for i in zaliki]
-    zaliki = sum(zaliki)  # всього заліків
-    dia3 *= exzamens  # К-ть студентів курсу/К екз * Кількість екзаменів
-    # Кількість екзаменів *Кількість груп * К пров_екз
+    zaliki = sum(zaliki)
+    dia3 *= exzamens
     dia4 = exzamens*int(values["пров_екз"])*kilkist_groups
 
-    # Кількість екзаменів * К пров_екз
     dia5 = exzamens*int(values["конс_пред_екз"])*kilkist_groups
-    # доделать....................................
     if kil_stud > int(values["студ_зал"]):
         dia6 = zaliki*int(values["заліки"])*kilkist_groups
     else:
@@ -230,7 +214,7 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course):
         k_pot_kons = 1
     k_pot_kons = int(k_pot_kons)
     dia7 = all_hours*k_pot_kons*kil_stud/100/int(values["академ_груп"])
-    kil_individ = 0  # dia8
+    kil_individ = 0
     Kr = 0
     Kp = 0
     row = 10
@@ -257,12 +241,9 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course):
     dia10 = Kp*float(values["кп"])*kil_stud
     dia11 = Kr*float(values["зах_кр"])*kil_stud
     dia12 = Kp*float(values["зах_кп"])*kil_stud
-    # змінна для практики
     dia13 = 0
-    # змінна для атестації
     dia14 = 0
     dia14 = findatect(sheetfile1, kil_stud, values, sheet)
-    # визначаємо який вид практики саме у цього курсу та отримує кортеж(вид практики, рядок на якому сама таблиця)
     praktika = findprakt(sheetfile1)
     if praktika != None:
         for name_, numbe in praktika:
@@ -285,53 +266,14 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course):
                 else:
                     dia13 += float(values["вир_практ2"]) * \
                         kil_tij_for_prakt*kil_tij_for_prakt*kil_stud
-# -------------------------------------------------------------------------------
-    # визначаємо чи є вибіркові дисципліни чи ні
+
     kil_vibir_disc = 0
     if number1[1] == 1:
         kil_vibir_disc = find_vibir_disc(sheetfile1, number)
-    print(kil_vibir_disc, " = kil_vibir_disc")
     vibirkovi = kil_vibir_disc*float(k_vibirkovi_disc)*kil_stud
     nav = sem1+sem2 + dia3 + dia4 + \
         dia5 + dia6 + dia7 + dia8 + dia9+dia10+dia11+dia12+dia13 + \
         dia14 + vibirkovi
-    # вивід усіх змінних для перевірки обчислень
-    print("vibirkovi = ", vibirkovi)
-    # print(f"praktika={praktika}")
-    # print(f"spec_chislo = ", spec_chislo)
-    # print(f"лекції 1 семестр", lekciya1)
-    # print(f"Практ 1 семестр", praktika1)
-    # print(f"Лаб_роб 1 семестр", labi1)
-    # print(f"лекції 2 семестр", lekciya2)
-    # print(f"Практ 2 семестр", praktika2)
-    # print(f"Лаб_роб 2 семестр", labi2)
-    # print(f"kil_tij_1_cem = {kil_tij_1_cem}")
-    # print(f"kil_tij_2_cem = {kil_tij_2_cem}")
-    # print(f"kil_stud = {kil_stud}")
-    # print(f"kilkist_groups = {kilkist_groups}")
-    # print(f"sem1 = {sem1}")
-    # print(f"sem2 = {sem2}")
-    # print(f"exzamens = {exzamens}")
-    # print(f"zaliki = {zaliki}")
-    # print(f"all_hours = {all_hours}")
-    # print(f"k_pot_kons = {k_pot_kons}")
-    # print(f"k_indiv = {k_indiv}")
-    # print(f"kil_individ = {kil_individ}")
-    # print(f"kr = {Kr}")
-    # print(f"kp = {Kp}")
-    # print(f"dia3 = {dia3}")
-    # print(f"dia4 = {dia4}")
-    # print(f"dia5 = {dia5}")
-    # print(f"dia6 = {dia6}")
-    # print(f"dia7 = {dia7}")
-    # print(f"dia8 = {dia8}")
-    # print(f"dia9 = {dia9}")
-    # print(f"dia10 = {dia10}")
-    # print(f"dia11 = {dia11}")
-    # print(f"dia12 = {dia12}")
-    # print(f"dia13 = {dia13}")
-    # print(f"dia14 = {dia14}")
-    print(f"навантаження = {nav}")
     nav = int(str(decimal.Decimal(nav).quantize(
         decimal.Decimal('0'), rounding=decimal.ROUND_HALF_UP)))
     return nav
@@ -339,7 +281,7 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course):
 
 if __name__ == "__main__":
     file1 = openpyxl.open("C:/Users/Touch.com.ua/Учеба/6 семестр/курсавая/курсова3py/main/excel files/ФПСО/Копия ДС 1-6к. 2022.xlsx",
-                          read_only=True, data_only=True)  # открываем файл
+                          read_only=True, data_only=True)
     sheet = "1-й курс "
     sheetfile1 = file1[sheet]
     E = 24
@@ -365,15 +307,3 @@ if __name__ == "__main__":
         print("Error")
     finally:
         file1.close()
-    # print(round(14.5000000001))
-    # nums = [0.4, 0.5, 1.5, 2.5, 3.4, 3.6, 3.5]
-    # nums_str = []
-    # for num in nums:
-    #     f_val = decimal.Decimal(num).quantize(
-    #         decimal.Decimal('0'), rounding=decimal.ROUND_HALF_UP)
-    #     nums_str.append(str(f_val))
-    # print(nums_str)
-    # nums_int = []
-    # for i in nums_str:
-    #     nums_int.append(int(i))
-    # print(nums_int)

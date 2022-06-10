@@ -5,7 +5,6 @@ from pathlib import Path
 
 
 def main():
-    # sg.theme('SystemDefault1')
     open_window = False
     while True:
         layout_settings = [
@@ -127,11 +126,6 @@ def main():
                        [sg.InputText(1.22)],
                        [sg.Text('Певна величина')],
                        [sg.InputText(10590.41)],
-                       #    [sg.Text('Ущільнення 1 семестру:'),
-                       #    sg.InputText(0,
-                       #                 size=(5, 1), key="chislo1")],
-                       #    [sg.Text('Ущільнення 2 семестру:'),
-                       #    sg.InputText(0, size=(5, 1), key="chislo2")],
                        [sg.Text('File1')],
                        [sg.InputText(
                        ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),))],
@@ -158,10 +152,9 @@ def main():
         ]]
         if open_window == False:
             window = sg.Window(
-                'Рентабельність спеціальності/факультету', tabgrp, icon="C:/Users/Touch.com.ua/Учеба/6 семестр/курсавая/курсова3py/main/DNU_gerb2.ico", size=(500, 400))
+                'Рентабельність спеціальності/факультету', tabgrp, icon="DNU_gerb2.ico", size=(500, 400))
             open_window = True
 
-        # записываем все полученные данные в values и кнопку события в event
         event, values = window.read()
         if event == "Відмінити" or event == None:
             flag = 0
@@ -188,17 +181,12 @@ def main():
                             break
                 else:
                     try:
-                        # print(k, v)
                         v = (float(v))
                     except:
                         sg.popup('Ви ввели некоректні данні: ', v)
                         flag = 0
                         break
-        # if flag == 1:
-        #     break
-    # print(values)
         if flag != 0:
-            print(values)
             reader(values)
             sg.popup('Програма закінчила свою роботу!')
 
