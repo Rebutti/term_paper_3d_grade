@@ -1,131 +1,138 @@
-
 import PySimpleGUI as sg
 from excelreader import reader
 from pathlib import Path
+from update_coefficients import save_coef, check_coef
+# from screeninfo import get_monitors
 
+# def get_monitor_size():
+#     for m in get_monitors():
+#         if m.is_primary == False:
+#             return m
 
 def main():
     open_window = False
+    values = check_coef()
     while True:
         layout_settings = [
             [sg.Text('К(вибір_дисц_бакалавр_денна):'),
-             sg.InputText(0.7, size=(5, 1),
+             sg.InputText(values["вибір_дисц_бакалавр_денна"], size=(5, 1),
                           do_not_clear=True, key="вибір_дисц_бакалавр_денна")],
             [sg.Text('К(вибір_дисц_магістр_денна):'),
-             sg.InputText(0.67, size=(5, 1),
+             sg.InputText(values["вибір_дисц_магістр_денна"], size=(5, 1),
                           do_not_clear=True, key="вибір_дисц_магістр_денна")],
             [sg.Text('К(вибір_дисц_бакалавр_заочна):'),
-             sg.InputText(0.17, size=(5, 1),
+             sg.InputText(values["вибір_дисц_бакалавр_заочна"], size=(5, 1),
                           do_not_clear=True, key="вибір_дисц_бакалавр_заочна")],
             [sg.Text('К(вибір_дисц_магістр_заочна):'),
-             sg.InputText(0.16, size=(5, 1),
+             sg.InputText(values["вибір_дисц_магістр_заочна"], size=(5, 1),
                           do_not_clear=True, key="вибір_дисц_магістр_заочна")],
             [sg.Text('К(вибір_дисц_бакалавр_вечірня):'),
-             sg.InputText(0.64, size=(5, 1),
+             sg.InputText(values["вибір_дисц_бакалавр_вечірня"], size=(5, 1),
                           do_not_clear=True, key="вибір_дисц_бакалавр_вечірня")],
             [sg.Text('К(екз):'),
-             sg.InputText(4, size=(5, 1),
+             sg.InputText(values["екз"], size=(5, 1),
                           do_not_clear=True, key="екз")],
             [sg.Text('К(пров_екз):'),
-             sg.InputText(2, size=(5, 1),
+             sg.InputText(values["пров_екз"], size=(5, 1),
                           do_not_clear=True, key="пров_екз")],
             [sg.Text('К(конс_пред_екз):'),
              sg.InputText(
-                2, size=(5, 1), do_not_clear=True, key="конс_пред_екз")],
+                values["конс_пред_екз"], size=(5, 1), do_not_clear=True, key="конс_пред_екз")],
             [sg.Text('К(заліки):'),
-             sg.InputText(2, size=(5, 1),
+             sg.InputText(values["заліки"], size=(5, 1),
                           do_not_clear=True, key="заліки")],
             [sg.Text('К(студ_зал):'),
-             sg.InputText(25, size=(5, 1),
+             sg.InputText(values["студ_зал"], size=(5, 1),
                           do_not_clear=True, key="студ_зал")],
             [sg.Text('К(пот_конс_денна):'),
-             sg.InputText(4, size=(5, 1),
+             sg.InputText(values["пот_конс_денна"], size=(5, 1),
                           do_not_clear=True, key="пот_конс_денна")],
             [sg.Text('К(пот_конс_вечірня):'),
-             sg.InputText(6, size=(5, 1),
+             sg.InputText(values["пот_конс_вечірня"], size=(5, 1),
                           do_not_clear=True, key="пот_конс_вечірня")],
             [sg.Text('К(пот_конс_заочна):'),
-             sg.InputText(8, size=(5, 1),
+             sg.InputText(values["пот_конс_заочна"], size=(5, 1),
                           do_not_clear=True, key="пот_конс_заочна")],
             [sg.Text('К(пот_конс_дуальна):'),
-             sg.InputText(10, size=(5, 1),
+             sg.InputText(values["пот_конс_дуальна"], size=(5, 1),
                           do_not_clear=True, key="пот_конс_дуальна")],
             [sg.Text('К(академ_груп):'),
-             sg.InputText(25, size=(5, 1),
+             sg.InputText(values["академ_груп"], size=(5, 1),
                           do_not_clear=True, key="академ_груп")],
             [sg.Text('К(індивід_денна/вечірня):'),
-             sg.InputText(4, size=(5, 1),
+             sg.InputText(values["індивід_денна/вечірня"], size=(5, 1),
                           do_not_clear=True, key="індивід_денна/вечірня")],
             [sg.Text('К(індивід_заочна):'),
-             sg.InputText(2, size=(5, 1),
+             sg.InputText(values["індивід_заочна"], size=(5, 1),
                           do_not_clear=True, key="індивід_заочна")],
             [sg.Text('К(індивід_дуальна):'),
-             sg.InputText(4, size=(5, 1),
+             sg.InputText(values["індивід_дуальна"], size=(5, 1),
                           do_not_clear=True, key="індивід_дуальна")],
             [sg.Text('К(кр):'),
-             sg.InputText(1, size=(5, 1),
+             sg.InputText(values["кр"], size=(5, 1),
                           do_not_clear=True, key="кр")],
             [sg.Text('К(кп):'),
-             sg.InputText(2, size=(5, 1),
+             sg.InputText(values["кп"], size=(5, 1),
                           do_not_clear=True, key="кп")],
             [sg.Text('К(зах_кр):'),
-             sg.InputText(1, size=(5, 1),
+             sg.InputText(values["зах_кр"], size=(5, 1),
                           do_not_clear=True, key="зах_кр")],
             [sg.Text('К(зах_кп):'),
-             sg.InputText(1, size=(5, 1),
+             sg.InputText(values["зах_кп"], size=(5, 1),
                           do_not_clear=True, key="зах_кп")],
             [sg.Text('К(нав_практ1):'),
-             sg.InputText(30, size=(5, 1),
+             sg.InputText(values["нав_практ1"], size=(5, 1),
                           do_not_clear=True, key="нав_практ1")],
             [sg.Text('К(нав_практ2):'),
-             sg.InputText(15, size=(5, 1),
+             sg.InputText(values["нав_практ2"], size=(5, 1),
                           do_not_clear=True, key="нав_практ2")],
             [sg.Text('К(вир_практ1):'),
-             sg.InputText(15, size=(5, 1),
+             sg.InputText(values["вир_практ1"], size=(5, 1),
                           do_not_clear=True, key="вир_практ1")],
             [sg.Text('К(вир_практ2):'),
-             sg.InputText(1, size=(5, 1),
+             sg.InputText(values["вир_практ2"], size=(5, 1),
                           do_not_clear=True, key="вир_практ2")],
             [sg.Text('К(вир_пр_переддипломна):'),
-             sg.InputText(1, size=(5, 1),
+             sg.InputText(values["вир_пр_переддипломна"], size=(5, 1),
                           do_not_clear=True, key="вир_пр_переддипломна")],
             [sg.Text('К(студ_нав_практ):'),
-             sg.InputText(15, size=(5, 1),
+             sg.InputText(values["студ_нав_практ"], size=(5, 1),
                           do_not_clear=True, key="студ_нав_практ")],
             [sg.Text('К(студ_вир_практ):'),
-             sg.InputText(15, size=(5, 1),
+             sg.InputText(values["студ_вир_практ"], size=(5, 1),
                           do_not_clear=True, key="студ_вир_практ")],
             [sg.Text('К(атест_ЕК):'),
-             sg.InputText(2, size=(5, 1),
+             sg.InputText(values["атест_ЕК"], size=(5, 1),
                           do_not_clear=True, key="атест_ЕК")],
             [sg.Text('К(атест_екз_консультації):'),
-             sg.InputText(8, size=(5, 1),
+             sg.InputText(values["атест_екз_консультації"], size=(5, 1),
                           do_not_clear=True, key="атест_екз_консультації")],
             [sg.Text('К(квал_роб_керівництво1):'),
-             sg.InputText(0, size=(5, 1),
+             sg.InputText(values["квал_роб_керівництво1"], size=(5, 1),
                           do_not_clear=True, key="квал_роб_керівництво1")],
             [sg.Text('К(квал_роб_керівництво2_до_5к):'),
-             sg.InputText(8, size=(5, 1),
+             sg.InputText(values["квал_роб_керівництво2_до_5к"], size=(5, 1),
                           do_not_clear=True, key="квал_роб_керівництво2_до_5к")],
             [sg.Text('К(квал_роб_керівництво2_5_та_6к):'),
-             sg.InputText(31, size=(5, 1),
+             sg.InputText(values["квал_роб_керівництво2_5_та_6к"], size=(5, 1),
                           do_not_clear=True, key="квал_роб_керівництво2_5_та_6к")],
             [sg.Text('К(квал_роб_рецензування_до_5к):'),
-             sg.InputText(2, size=(5, 1),
+             sg.InputText(values["квал_роб_рецензування_до_5к"], size=(5, 1),
                           do_not_clear=True, key="квал_роб_рецензування_до_5к")],
             [sg.Text('К(квал_роб_рецензування_5_та_6к):'),
-             sg.InputText(4, size=(5, 1),
+             sg.InputText(values["квал_роб_рецензування_5_та_6к"], size=(5, 1),
                           do_not_clear=True, key="квал_роб_рецензування_5_та_6к")],
+            [sg.Submit("Зберегти", key='save_coef')],
 
         ]
         layout_main = [[sg.Text('Середнє навчальне навантаження.')],
-                       [sg.InputText(580)],
+                       [sg.InputText(values[0])],
                        [sg.Text('Середня заробітна плата')],
-                       [sg.InputText(17100)],
+                       [sg.InputText(values[1])],
                        [sg.Text('Відрахування ЄСВ')],
-                       [sg.InputText(1.22)],
+                       [sg.InputText(values[2])],
                        [sg.Text('Певна величина')],
-                       [sg.InputText(10590.41)],
+                       [sg.InputText(values[3])],
                        [sg.Text('File1')],
                        [sg.InputText(
                        ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),))],
@@ -152,14 +159,21 @@ def main():
         ]]
         if open_window == False:
             window = sg.Window(
-                'Рентабельність спеціальності/факультету', tabgrp, icon="DNU_gerb2.ico", size=(500, 400))
+                'Рентабельність спеціальності/факультету', tabgrp, icon="DNU_gerb2.ico", size=(600, 400))
+                # 'Рентабельність спеціальності/факультету', tabgrp, icon="DNU_gerb2.ico", size=(int(int(get_monitor_size().width)/2), int(int(get_monitor_size().height)/2)))
             open_window = True
 
         event, values = window.read()
+        # print(values)
         if event == "Відмінити" or event == None:
             flag = 0
             window.close()
             break
+        elif event == 'save_coef':
+            save_coef(values, False)
+            save_coef(values)
+            sg.popup('Нові дані збережені!')
+            continue
         else:
             flag = 1
         if len(values) < 6:
