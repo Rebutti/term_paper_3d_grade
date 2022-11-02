@@ -1,12 +1,13 @@
 from openpyxl.styles.numbers import BUILTIN_FORMATS
-from navantaj import navantaj
+from navantaj import minus_hours, navantaj
 
 
 def findgname(sheet):
     groupname = sheet["A2"].value
     groupname = groupname.replace(' ', '')
-    groupname = groupname[5:7]
-    return groupname
+    if groupname[8] == 'y' or groupname[8] == 'у':
+        return groupname[5:8]
+    return groupname[5:7]
 
 
 def findgfname(sheet):
@@ -88,7 +89,7 @@ def rentabel(sheetfile1, sheetfile2, savesheet, ser_nav_nav, ser_zar_plat, ESV, 
         H = sheetfile2["H"+str(number)].value
     else:
         H = 0
-    E = F+G+H
+    E = int(F)+int(G)+int(H)
     savesheet["E"+str(number)] = E
     I = sheetfile2["I"+str(number)].value
     savesheet["I"+str(number)] = I
@@ -99,8 +100,12 @@ def rentabel(sheetfile1, sheetfile2, savesheet, ser_nav_nav, ser_zar_plat, ESV, 
     else:
         K = 0
     savesheet["K"+str(number)] = K
+    try:
+        minus_hours = float(sheetfile2["R"+str(number)].value)
+    except:
+        minus_hours = 0
     L = navantaj(sheetfile1=sheetfile1, values=values,
-                 kil_stud=E, sheet=sheet, course=course[1])
+                 kil_stud=E, sheet=sheet, course=course[1], minus_hours=minus_hours)
     savesheet["L"+str(number)] = L
     savesheet["L"+str(number+1)] = "=SUM(L9:"+"L"+str(number)+")"
     M = float(toFixed(float(L)/float(ser_nav_nav), 2))
@@ -122,3 +127,6 @@ def rentabel(sheetfile1, sheetfile2, savesheet, ser_nav_nav, ser_zar_plat, ESV, 
     Q = float(toFixed(float(float(N)-float(O)), 0))
     savesheet["Q"+str(number)] = Q
     savesheet["Q"+str(number+1)] = "=SUM(Q9:"+"Q"+str(number)+")"
+
+if __name__ == '__main__':
+    findgname()
