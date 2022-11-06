@@ -30,9 +30,6 @@ def findlpl(sheetfile1) -> int:
         else:
             number += 1
 
-def minus_hours(sheetfile2):
-    pass
-
 
 def find_vibir_disc(sheetfile1, obov_disc: int):
     letter = 'B'
@@ -276,7 +273,7 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
     vibirkovi = kil_vibir_disc*float(k_vibirkovi_disc)*kil_stud
     nav = sem1+sem2 + dia3 + dia4 + \
         dia5 + dia6 + dia7 + dia8 + dia9+dia10+dia11+dia12+dia13 + \
-        dia14 + vibirkovi - minus_hours
+        dia14 + vibirkovi + minus_hours
     nav = int(str(decimal.Decimal(nav).quantize(
         decimal.Decimal('0'), rounding=decimal.ROUND_HALF_UP)))
     return nav
