@@ -5,9 +5,10 @@ test.py
 __pycache__/
 *.py[cod]
 *$py.class
-
+рентабельність.xlsx
 # C extensions
 *.so
+*.xlsx
 
 # Distribution / packaging
 .Python

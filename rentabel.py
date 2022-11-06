@@ -1,12 +1,13 @@
 from openpyxl.styles.numbers import BUILTIN_FORMATS
-from navantaj import minus_hours, navantaj
+from navantaj import navantaj
+import PySimpleGUI as sg
 
 
 def findgname(sheet):
     groupname = sheet["A2"].value
     groupname = groupname.replace(' ', '')
-    if groupname[8] == 'y' or groupname[8] == 'у':
-        return groupname[5:8]
+    if groupname[10] == 'y' or groupname[10] == 'у':
+        return groupname[5:7]+'у'
     return groupname[5:7]
 
 
@@ -62,6 +63,24 @@ def allmoney(I9, F9, G9, J9, H9, K9):
     return money
 
 
+def check_courses(course_in_file1, course_in_file2, sheetname, file2_number_of_course):
+    print('course_in_file1: '+course_in_file1)
+    print('course_in_file2: '+course_in_file2)
+    sheetname = str(sheetname)
+    file2_number_of_course = str(file2_number_of_course)
+    if course_in_file1.upper() == course_in_file2.upper():
+        if file2_number_of_course == '1м':
+            file2_number_of_course = '1'
+        elif file2_number_of_course == '2м':
+            file2_number_of_course = '2'
+        if file2_number_of_course in sheetname:
+            return True
+        
+        print(file2_number_of_course in sheetname)
+        print(sheetname)
+        print(file2_number_of_course)
+    return False
+
 def rentabel(sheetfile1, sheetfile2, savesheet, ser_nav_nav, ser_zar_plat, ESV, pev_vel, sheet, values):
     letter = "A"
     number = 8
@@ -72,6 +91,11 @@ def rentabel(sheetfile1, sheetfile2, savesheet, ser_nav_nav, ser_zar_plat, ESV, 
         else:
             number += 1
             let_num = letter+str(number)
+    if check_courses(findgname(sheetfile1), sheetfile2["A"+str(number)].value, sheet, sheetfile2["D"+str(number)].value):
+        pass
+    else:
+        sg.popup(f'Курси або шифри у файлах не збігаються: {sheet} та {sheetfile2["D"+str(number)].value}, {findgname(sheetfile1)} та {sheetfile2["A"+str(number)].value}')
+        return None
     savesheet['A'+str(number)] = findgname(sheetfile1)
     savesheet["B"+str(number)] = findgfname(sheetfile1)
     savesheet["C"+str(number)] = findgtype(sheetfile1)
@@ -129,4 +153,5 @@ def rentabel(sheetfile1, sheetfile2, savesheet, ser_nav_nav, ser_zar_plat, ESV, 
     savesheet["Q"+str(number+1)] = "=SUM(Q9:"+"Q"+str(number)+")"
 
 if __name__ == '__main__':
-    findgname()
+    a = findgname('Група                                         ПА-22у (денна форма навчання)')
+    print(a)
