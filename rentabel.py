@@ -70,9 +70,9 @@ def check_courses(course_in_file1, course_in_file2, sheetname, file2_number_of_c
     file2_number_of_course = str(file2_number_of_course)
     if course_in_file1.upper() == course_in_file2.upper():
         if file2_number_of_course == '1м':
-            file2_number_of_course = '1'
+            file2_number_of_course = '5'
         elif file2_number_of_course == '2м':
-            file2_number_of_course = '2'
+            file2_number_of_course = '6'
         if file2_number_of_course in sheetname:
             return True
         
