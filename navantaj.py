@@ -8,10 +8,21 @@ def toFixed(numObj, digits=0):
 
 
 def findgtype(sheet):
-    groupname = sheet["A2"].value
-    groupname = groupname[groupname.find('(')+1:]
-    groupname = groupname[:groupname.find(' ')]
-    return groupname
+    letter = 'A'
+    number = 1
+    groupname = None
+    while number < 20:
+        if sheet[letter+str(number)].value != None:
+            if 'група' in sheet[letter+str(number)].value.lower():
+                groupname = sheet[letter+str(number)].value
+                groupname = groupname[groupname.find('(')+1:]
+                groupname = groupname[:groupname.find(' ')]
+                return groupname
+            else:
+                number += 1
+        else:
+            number += 1
+    return "Не вдалося знайти комірку з даними про групу"
 
 
 def findlpl(sheetfile1) -> int:
@@ -137,23 +148,148 @@ def findatect(sheetfile1, kil_stud, values, sheet):
     return result
 
 
+def find_kil_groups(sheet):
+    letter = 'A'
+    number = 1
+    kil_groups = None
+    while number < 20:
+        if sheet[letter+str(number)].value != None:
+            if 'кількість' in str(sheet[letter+str(number)].value).lower():
+                kil_groups = sheet[letter+str(number)].value
+                kilkist_groups = []
+                for i in filter(lambda x: str(x).isdigit(), kil_groups):
+                    kilkist_groups.append(i)
+                kilkist_groups = int(kilkist_groups[0])
+                return kilkist_groups
+            else:
+                number += 1
+        else:
+            number += 1
+    return "Не вдалося знайти комірку з даними про кількіть груп"
+
+
+def minuses_counter(sheet: openpyxl.Workbook, kil_gruops, lpl, amount_of_1weeks, amount_of_2weeks, spec_chislo):
+    result = 0
+    letter = 'D'
+    number = 1
+    for i in range(1, 15):
+        if '4' in str(sheet[letter+str(number)].value):
+            number += 1
+            break
+        else:
+            number += 1
+    for row in range(number, lpl):
+        # считаю для колонки 4
+        a = 0
+        b = 0
+        letter = 'D'
+        if sheet[letter+str(row)].value != None:
+            kol4 = find_number_pg(sheet, letter, row)
+            if kol4 != kil_gruops:
+                kol16, kol20 = validation_for_hours_for_lessons(
+                    sheet, 'P', 'T', row)
+            if kol4 < kil_gruops:
+                a = abs(kol16*amount_of_1weeks*kil_gruops -
+                        kol16*amount_of_1weeks*kol4)*(-1)
+                b = abs(kol20*amount_of_2weeks*kil_gruops -
+                        kol20*amount_of_2weeks*kol4)*(-1)
+            elif kol4 > kil_gruops:
+                a = abs(kol16*amount_of_1weeks*(kol4-kil_gruops))
+                b = abs(kol20*amount_of_2weeks*(kol4-kil_gruops))
+            result = result + a + b
+        # считаю для колонки 5
+        letter = 'E'
+        a = 0
+        b = 0
+        if sheet[letter+str(row)].value != None:
+            kol5 = find_number_pg(sheet, letter, row)
+            kol17, kol21 = validation_for_hours_for_lessons(
+                sheet, 'Q', 'U', row)
+            if kol5 < kil_gruops*spec_chislo:
+                str_res = str_res + ' kol17 = ' + \
+                    str(kol17) + ' kol21 = ' + str(kol21) + ' '
+                a = abs(kol17*amount_of_1weeks*kil_gruops *
+                        spec_chislo-kol17*amount_of_1weeks*kol5)*(-1)
+                b = abs(kol21*amount_of_2weeks*kil_gruops *
+                        spec_chislo-kol21*amount_of_2weeks*kol5)*(-1)
+            elif kol5 > kil_gruops*spec_chislo:
+                a = abs(kol17 * amount_of_1weeks *
+                        (kol5-kil_gruops*spec_chislo))
+                b = abs(kol21 * amount_of_2weeks *
+                        (kol5-kil_gruops*spec_chislo))
+            result = result + a + b
+        # считаю для колонки 6
+        letter = 'F'
+        a = 0
+        b = 0
+        flag = False
+        if sheet[letter+str(row)].value != None:
+            kol6 = find_number_pg(sheet, letter, row)
+            if type(kol6) == tuple:
+                flag = kol6[1]
+                kol6 = kol6[0]
+            if kol6 != kil_gruops:
+                kol15, kol19 = validation_for_hours_for_lessons(
+                    sheet, 'O', 'S', row)
+            if flag == True:
+                a = abs(kol15*amount_of_1weeks-kol15 *
+                        amount_of_1weeks*1/kol6)*(-1)
+                b = abs(kol19*amount_of_2weeks-kol19 *
+                        amount_of_2weeks*1/kol6)*(-1)
+            else:
+                if kol6 < 1:
+                    a = abs(kol15*amount_of_1weeks-kol15 *
+                            amount_of_1weeks*kol6)*(-1)
+                    b = abs(kol19*amount_of_2weeks-kol19 *
+                            amount_of_2weeks*kol6)*(-1)
+                elif kol6 > 1:
+                    a = abs(kol15*amount_of_1weeks*(kol6-1))
+                    b = abs(kol19*amount_of_2weeks*(kol6-1))
+            result = result + a + b
+    return result
+
+
+def find_number_pg(sheet, letter, row):
+    try:
+        kol = float(sheet[letter+str(row)].value)
+        return kol
+    except:
+        kol = len(str(sheet[letter+str(row)].value).split(' '))+1
+        return kol, True
+
+
+def validation_for_hours_for_lessons(sheet, letter_1_col, letter_2_col, row):
+    if sheet[letter_1_col+str(row)].value != None:
+        column1 = float(sheet[letter_1_col+str(row)].value)
+    else:
+        column1 = 0
+    if sheet[letter_2_col+str(row)].value != None:
+        column2 = float(sheet[letter_2_col+str(row)].value)
+    else:
+        column2 = 0
+    return column1, column2
+
+
 def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
     number1 = findlpl(sheetfile1)
     number = number1[0]
-
     kil_tij_1_cem = int(str(sheetfile1["O7"].value).strip()[:2])
     kil_tij_2_cem = int(str(sheetfile1["S7"].value).strip()[:2])
-    kil_groups = sheetfile1["A3"].value.split(" ")
-    kilkist_groups = []
-    for i in filter(lambda x: str(x).isdigit(), kil_groups):
-        kilkist_groups.append(i)
-    kilkist_groups = int(kilkist_groups[0])
-    lekciya1 = toFixed(float(sheetfile1["O"+str(number)].value), 2)
-    praktika1 = toFixed(float(sheetfile1["P"+str(number)].value), 2)
-    labi1 = toFixed(float(sheetfile1["Q"+str(number)].value), 2)
-    lekciya2 = toFixed(float(sheetfile1["S"+str(number)].value), 2)
-    praktika2 = toFixed(float(sheetfile1["T"+str(number)].value), 2)
-    labi2 = toFixed(float(sheetfile1["U"+str(number)].value), 2)
+    kilkist_groups = find_kil_groups(sheetfile1)
+    if kilkist_groups == 'Не вдалося знайти комірку з даними про кількіть груп':
+        return (kilkist_groups, 'Error')
+    lekciya1 = toFixed(float(
+        sheetfile1["O"+str(number)].value if sheetfile1["O"+str(number)].value != None else 0), 2)
+    praktika1 = toFixed(float(
+        sheetfile1["P"+str(number)].value if sheetfile1["P"+str(number)].value != None else 0), 2)
+    labi1 = toFixed(float(
+        sheetfile1["Q"+str(number)].value if sheetfile1["Q"+str(number)].value != None else 0), 2)
+    lekciya2 = toFixed(float(
+        sheetfile1["S"+str(number)].value if sheetfile1["S"+str(number)].value != None else 0), 2)
+    praktika2 = toFixed(float(
+        sheetfile1["T"+str(number)].value if sheetfile1["T"+str(number)].value != None else 0), 2)
+    labi2 = toFixed(float(
+        sheetfile1["U"+str(number)].value if sheetfile1["U"+str(number)].value != None else 0), 2)
     if kil_stud > int(values["студ_зал"]):
         spec_chislo = 2
     else:
@@ -189,6 +325,8 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
         dia6 = zaliki*int(values["заліки"])/2
 
     k_pot_kons = findgtype(sheetfile1)
+    if k_pot_kons == "Не вдалося знайти комірку з даними про групу":
+        return (k_pot_kons, "Error")
     if k_pot_kons == "денна":
         k_pot_kons = values['пот_конс_денна']
         k_indiv = values['індивід_денна/вечірня']
@@ -221,12 +359,12 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
     letter1 = "K"
     nowords = ["кр", "кп"]
     while row < number:
-        if sheetfile1[letter1+str(row)].value != None and sheetfile1[letter1+str(row)].value.lower() not in nowords:
+        if sheetfile1[letter1+str(row)].value != None and str(sheetfile1[letter1+str(row)].value).lower() not in nowords:
             kil_individ += 1
         elif sheetfile1[letter1+str(row)].value != None:
-            if sheetfile1[letter1+str(row)].value.lower() in nowords:
+            if str(sheetfile1[letter1+str(row)].value).lower() in nowords:
                 kil_individ -= 1
-            if sheetfile1[letter1+str(row)].value.lower() == "кр":
+            if str(sheetfile1[letter1+str(row)].value).lower() == "кр":
                 Kr += 1
             else:
                 Kp += 1
@@ -273,16 +411,18 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
     vibirkovi = kil_vibir_disc*float(k_vibirkovi_disc)*kil_stud
     nav = sem1+sem2 + dia3 + dia4 + \
         dia5 + dia6 + dia7 + dia8 + dia9+dia10+dia11+dia12+dia13 + \
-        dia14 + vibirkovi + minus_hours
+        dia14 + vibirkovi + minus_hours + \
+        minuses_counter(sheetfile1, kilkist_groups, number,
+                        kil_tij_1_cem, kil_tij_2_cem, spec_chislo)
     nav = int(str(decimal.Decimal(nav).quantize(
         decimal.Decimal('0'), rounding=decimal.ROUND_HALF_UP)))
     return nav
 
 
 if __name__ == "__main__":
-    file1 = openpyxl.open("C:/Users/Touch.com.ua/Учеба/6 семестр/курсавая/курсова3py/main/excel files/ФПСО/Копия ДС 1-6к. 2022.xlsx",
+    file1 = openpyxl.open("D:/Учеба/7_семестр/курсавая/tests/New folder/Копия ПАу 1-2к. 2022.xlsx",
                           read_only=True, data_only=True)
-    sheet = "1-й курс "
+    sheet = "5-й курс "
     sheetfile1 = file1[sheet]
     E = 24
     course = 1
@@ -302,8 +442,11 @@ if __name__ == "__main__":
               'квал_роб_керівництво1': '0', 'квал_роб_керівництво2_до_5к': '8', 'квал_роб_керівництво2_5_та_6к': '31',
               'квал_роб_рецензування_до_5к': '2', 'квал_роб_рецензування_5_та_6к': '4', 8: 'Головна'}
     try:
-        navantaj(sheetfile1, values, E, sheet, course)
+        print(minuses_counter(sheetfile1, find_kil_groups(
+            sheetfile1), findlpl(sheetfile1)[0], 16, 16, 1))
     except:
         print("Error")
     finally:
         file1.close()
+    # minuses_counter(sheetfile1, find_kil_groups(
+    #         sheetfile1), findlpl(sheetfile1)[0], 16, 16, 1)

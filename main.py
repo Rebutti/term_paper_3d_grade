@@ -9,6 +9,7 @@ from update_coefficients import save_coef, check_coef
 #         if m.is_primary == False:
 #             return m
 
+
 def main():
     open_window = False
     values = check_coef()
@@ -134,18 +135,18 @@ def main():
                        [sg.Text('Певна величина')],
                        [sg.InputText(values[3])],
                        [sg.Text('Навчальний план')],
-                       [sg.InputText(size=(31,1)
-                       ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),))],
+                       [sg.InputText(size=(31, 1)
+                                     ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),))],
                        [sg.Text('Розрахунок')],
-                       [sg.InputText(size=(31,1)
-                       ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),))],
+                       [sg.InputText(size=(31, 1)
+                                     ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),))],
                        [sg.Text('Доповнити файл?')],
                        [sg.Radio('Так',
                                  "RADIO1", default=False, key="filetrue"),
                        sg.Radio('Ні',
                                 "RADIO1", default=True)],
-                       [sg.InputText(size=(31,1)
-                       ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="dop_file")],
+                       [sg.InputText(size=(31, 1)
+                                     ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="dop_file")],
                        [sg.Submit("Підтвердити"), sg.Cancel("Відмінити")],
                        ]
         layout = [
@@ -161,7 +162,7 @@ def main():
             window = sg.Window(
                 'Рентабельність спеціальності/факультету', tabgrp, icon="DNU_gerb2.ico", size=(600, 400)).Finalize()
             # window.Maximize()
-                # 'Рентабельність спеціальності/факультету', tabgrp, icon="DNU_gerb2.ico", size=(int(int(get_monitor_size().width)/2), int(int(get_monitor_size().height)/2)))
+            # 'Рентабельність спеціальності/факультету', tabgrp, icon="DNU_gerb2.ico", size=(int(int(get_monitor_size().width)/2), int(int(get_monitor_size().height)/2)))
             open_window = True
 
         event, values = window.read()
