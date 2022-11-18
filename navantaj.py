@@ -206,8 +206,6 @@ def minuses_counter(sheet: openpyxl.Workbook, kil_gruops, lpl, amount_of_1weeks,
             kol17, kol21 = validation_for_hours_for_lessons(
                 sheet, 'Q', 'U', row)
             if kol5 < kil_gruops*spec_chislo:
-                str_res = str_res + ' kol17 = ' + \
-                    str(kol17) + ' kol21 = ' + str(kol21) + ' '
                 a = abs(kol17*amount_of_1weeks*kil_gruops *
                         spec_chislo-kol17*amount_of_1weeks*kol5)*(-1)
                 b = abs(kol21*amount_of_2weeks*kil_gruops *
