@@ -231,20 +231,20 @@ def minuses_counter(sheet: openpyxl.Workbook, kil_gruops, lpl, amount_of_1weeks,
             if kol6 != kil_gruops:
                 kol15, kol19 = validation_for_hours_for_lessons(
                     sheet, 'O', 'S', row)
-            if flag == True:
-                a = abs(kol15*amount_of_1weeks-kol15 *
-                        amount_of_1weeks*1/kol6)*(-1)
-                b = abs(kol19*amount_of_2weeks-kol19 *
-                        amount_of_2weeks*1/kol6)*(-1)
-            else:
-                if kol6 < 1:
+                if flag == True:
                     a = abs(kol15*amount_of_1weeks-kol15 *
-                            amount_of_1weeks*kol6)*(-1)
+                            amount_of_1weeks*1/kol6)*(-1)
                     b = abs(kol19*amount_of_2weeks-kol19 *
-                            amount_of_2weeks*kol6)*(-1)
-                elif kol6 > 1:
-                    a = abs(kol15*amount_of_1weeks*(kol6-1))
-                    b = abs(kol19*amount_of_2weeks*(kol6-1))
+                            amount_of_2weeks*1/kol6)*(-1)
+                else:
+                    if kol6 < 1:
+                        a = abs(kol15*amount_of_1weeks-kol15 *
+                                amount_of_1weeks*kol6)*(-1)
+                        b = abs(kol19*amount_of_2weeks-kol19 *
+                                amount_of_2weeks*kol6)*(-1)
+                    elif kol6 > 1:
+                        a = abs(kol15*amount_of_1weeks*(kol6-1))
+                        b = abs(kol19*amount_of_2weeks*(kol6-1))
             result = result + a + b
     return result
 
@@ -254,7 +254,7 @@ def find_number_pg(sheet, letter, row):
         kol = float(sheet[letter+str(row)].value)
         return kol
     except:
-        kol = len(str(sheet[letter+str(row)].value).split(' '))+1
+        kol = len(str(sheet[letter+str(row)].value).strip().split(' '))+1
         return kol, True
 
 
