@@ -109,7 +109,7 @@ def allmoney(I9, F9, G9, J9, H9, K9):
 def check_courses(course_in_file1, course_in_file2, sheetname, file2_number_of_course):
     sheetname = str(sheetname)
     file2_number_of_course = str(file2_number_of_course)
-    if course_in_file1.upper() == course_in_file2.upper():
+    if course_in_file1.upper().strip() == course_in_file2.upper().strip():
         if file2_number_of_course == '1м':
             file2_number_of_course = '5'
         elif file2_number_of_course == '2м':

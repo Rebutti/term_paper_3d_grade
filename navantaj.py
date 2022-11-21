@@ -301,6 +301,9 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
 
     exzamens = str(sheetfile1["G"+str(number)].value).strip().split(' ')
     zaliki = str(sheetfile1["H"+str(number)].value).strip().split(' ')
+    for el in zaliki:
+        if el == '':
+            zaliki.remove(el)
     all_hours = sheetfile1["M"+str(number)].value
 
     dia3 = kil_stud/int(values["екз"])
