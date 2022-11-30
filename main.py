@@ -123,6 +123,15 @@ def main():
             [sg.Text('К(квал_роб_рецензування_5_та_6к):'),
              sg.InputText(values["квал_роб_рецензування_5_та_6к"], size=(5, 1),
                           do_not_clear=True, key="квал_роб_рецензування_5_та_6к")],
+            [sg.Text('К(D1coeff):'),
+             sg.InputText(values["D1coeff"], size=(5, 1),
+                          do_not_clear=True, key="D1coeff")],
+            [sg.Text('К(E1coeff):'),
+             sg.InputText(values["E1coeff"], size=(5, 1),
+                          do_not_clear=True, key="E1coeff")],
+            [sg.Text('К(НПП_витрати):'),
+             sg.InputText(values['НПП_витрати'], size=(5, 1),
+                          do_not_clear=True, key='НПП_витрати')],
             [sg.Submit("Зберегти", key='save_coef')],
 
         ]
@@ -149,25 +158,32 @@ def main():
                                      ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="dop_file")],
                        [sg.Submit("Підтвердити"), sg.Cancel("Відмінити")],
                        ]
-        layout = [
+        layout_vart = [
+                       [sg.Text('Навчальний план')],
+                       [sg.InputText(size=(31, 1)
+                                     ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="plan_vart")],
+                       [sg.Submit("Підтвердити", key='count_vartist'), sg.Cancel("Відмінити", key="cancel")],
+                       ]
+        layout_set = [
             [sg.Column(layout_settings, scrollable=True,  vertical_scroll_only=True, size_subsample_height=1.5, size_subsample_width=0.54)]]
         layout_main1 = [
             [sg.Column(layout_main, scrollable=True,  vertical_scroll_only=True, size_subsample_height=1, size_subsample_width=0.55)]]
+        layout_vartist = [
+            [sg.Column(layout_vart, scrollable=True,  vertical_scroll_only=True, size_subsample_height=1, size_subsample_width=0.55)]]
 
         tabgrp = [[
             sg.TabGroup([[sg.Tab("Головна", layout_main1),
-                        sg.Tab("Налаштування", layout)]])
+                        sg.Tab("Налаштування", layout_set),
+                        sg.Tab("Вартість", layout_vartist)]])
         ]]
         if open_window == False:
             window = sg.Window(
                 'Рентабельність спеціальності/факультету', tabgrp, icon="DNU_gerb2.ico", size=(600, 400)).Finalize()
-            # window.Maximize()
-            # 'Рентабельність спеціальності/факультету', tabgrp, icon="DNU_gerb2.ico", size=(int(int(get_monitor_size().width)/2), int(int(get_monitor_size().height)/2)))
             open_window = True
 
         event, values = window.read()
-        # print(values)
-        if event == "Відмінити" or event == None:
+        print(values, event)
+        if event == "Відмінити" or event == None or event == "cancel":
             flag = 0
             window.close()
             break
@@ -178,13 +194,14 @@ def main():
             continue
         else:
             flag = 1
+        print(len(values))
         if len(values) < 6:
             sg.popup('Ви ввели некоректні данні: ', v)
             break
         if flag == 1:
             flag = 0
             for k, v in values.items():
-                if k == 4 or k == 5 or k == "Переглянути" or k == "Переглянути0" or k == 6 or k == 9 or k == 7 or k == 8 or k == "dop_file":
+                if k == 4 or k == 5 or k == "Переглянути" or k == "Переглянути0" or k == 6 or k == 9 or k == 7 or k == 8 or k == "dop_file" or k == "plan_vart":
                     flag = 1
                     if k == 4 or k == 5 or k == "Переглянути":
                         a = Path(v)
@@ -197,6 +214,7 @@ def main():
                             break
                 else:
                     try:
+                        print(k,v)
                         v = (float(v))
                     except:
                         sg.popup('Ви ввели некоректні данні: ', v)
