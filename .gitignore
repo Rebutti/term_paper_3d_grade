@@ -8,7 +8,9 @@ __pycache__/
 рентабельність.xlsx
 # C extensions
 *.so
-*.xlsx
+document_template.xlsx
+рентабельність.xlsx
+New_folder
 .vscode
 # Distribution / packaging
 .Python
