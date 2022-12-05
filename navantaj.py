@@ -47,8 +47,11 @@ def find_vibir_disc(sheetfile1, obov_disc: int):
     obov_disc = obov_disc+1
     kilkist_obov_disc = 0
     while True:
+        if sheetfile1[letter+str(obov_disc)].value == None:
+            continue
         if sheetfile1[letter+str(obov_disc)].value.lower().find("вибірковими") != -1:
             break
+        
         else:
             obov_disc += 1
             kilkist_obov_disc += 1
@@ -185,6 +188,8 @@ def minuses_counter(sheet: openpyxl.Workbook, kil_gruops, lpl, amount_of_1weeks,
         letter = 'D'
         if sheet[letter+str(row)].value != None:
             kol4 = find_number_pg(sheet, letter, row)
+            if type(kol4) == tuple:
+                kol4 = kol4[0]
             if kol4 != kil_gruops:
                 kol16, kol20 = validation_for_hours_for_lessons(
                     sheet, 'P', 'T', row)
@@ -205,6 +210,8 @@ def minuses_counter(sheet: openpyxl.Workbook, kil_gruops, lpl, amount_of_1weeks,
             kol5 = find_number_pg(sheet, letter, row)
             kol17, kol21 = validation_for_hours_for_lessons(
                 sheet, 'Q', 'U', row)
+            if type(kol5) == tuple:
+                kol5 = kol5[0]
             if kol5 < kil_gruops*spec_chislo:
                 a = abs(kol17*amount_of_1weeks*kil_gruops *
                         spec_chislo-kol17*amount_of_1weeks*kol5)*(-1)
@@ -249,7 +256,7 @@ def minuses_counter(sheet: openpyxl.Workbook, kil_gruops, lpl, amount_of_1weeks,
 
 def find_number_pg(sheet, letter, row):
     try:
-        kol = float(sheet[letter+str(row)].value)
+        kol = float(sheet[letter+str(row)].value.strip())
         return kol
     except:
         kol = len(str(sheet[letter+str(row)].value).strip().split(' '))+1

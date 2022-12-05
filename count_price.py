@@ -86,6 +86,27 @@ def npp_counter(values, navantaj):
 def bill_counter(values, npp_bills):
     return toFixed(npp_bills/float(values['НПП_витрати'])*100, 2)
 
+def find_vir_pr(sheetfile1, start_row):
+    letter = 'B'
+    kil_tij = 0
+    for row in range(start_row, start_row+30):
+        if sheetfile1[letter+str(row)].value != None:
+            if str(sheetfile1[letter+str(row)].value).lower().find("виробнича: виробнича") != -1:
+                kil_tij += float(sheetfile1['E'+str(row)].value)
+    return kil_tij
+
+def find_kval_rob(sheetfile1, start_row):
+    letter = 'B'
+    kil_rob = 0
+    for row in range(start_row, start_row+30):
+        if sheetfile1[letter+str(row)].value != None:
+            print(sheetfile1[letter+str(row)].value)
+            if str(sheetfile1[letter+str(row)].value).lower().find("кваліфікаційна робота") != -1:
+                kil_rob += 1
+    print(kil_rob)
+    return kil_rob
+                
+
 
 def count_price(sheetfile1, values):
     file_save = openpyxl.load_workbook('розрахунок вартості шаблон.xlsx')
@@ -129,9 +150,13 @@ def count_price(sheetfile1, values):
     if current_consultations == None:
         return f'Не вдалось знайти поточні консультації {sheetfile1.title}'
     result_kr, result_kp = find_kr_kp(sheetfile1, number)
-    vibir_disc = find_vibir_disc(sheetfile1, number)
+    vibir_disc = 0
+    if number1[1] == 1:
+        vibir_disc = find_vibir_disc(sheetfile1, number)
+    kil_tij_vir_pr = find_vir_pr(sheetfile1, number)
+    kil_kval_rob = find_kval_rob(sheetfile1, number)
     row_number = 4
-    for student_number in range(1, 31):
+    for student_number in range(1, 2):
         for sheet_name in sheet_names:
             file_save_sheet = file_save[sheet_name]
             file_save_sheet['A'+str(row_number)] = student_number
@@ -154,12 +179,12 @@ def count_price(sheetfile1, values):
             file_save_sheet['Q'+str(row_number)] = 0
             file_save_sheet['R'+str(row_number)] = result_kr
             file_save_sheet['S'+str(row_number)] = result_kp
-            file_save_sheet['T'+str(row_number)] = 0
+            file_save_sheet['T'+str(row_number)] = kil_tij_vir_pr
             file_save_sheet['U'+str(row_number)] = 0
             file_save_sheet['V'+str(row_number)
                             ] = vibir_disc
             file_save_sheet['W'+str(row_number)] = 0
-            file_save_sheet['X'+str(row_number)] = 0
+            file_save_sheet['X'+str(row_number)] = kil_kval_rob
             file_save_sheet['Y'+str(row_number)] = 0
             # kil_stud = find_amount_of_students(sheetfile1)
             navantajenya = navantaj(
@@ -180,8 +205,7 @@ def count_price(sheetfile1, values):
 
 
 if __name__ == "__main__":
-    values = {0: '580', 1: '17100', 2: '1.22', 3: '10590.41', 4: '', 'Переглянути': '', 5: '', 'Переглянути0': '', 'filetrue': False, 6: True, 7: '', 'dop_file': '', 'вибір_дисц_бакалавр_денна': '0.7', 'вибір_дисц_магістр_денна': '0.76', 'вибір_дисц_бакалавр_заочна': '0.17', 'вибір_дисц_магістр_заочна': '0.1', 'вибір_дисц_бакалавр_вечірня': '0.64', 'екз': '4', 'пров_екз': '0', 'конс_пред_екз': '2', 'заліки': '0', 'студ_зал': '25', 'пот_конс_денна': '2', 'пот_конс_вечірня': '2', 'пот_конс_заочна': '4', 'пот_конс_дуальна': '10', 'академ_груп': '25', 'індивід_денна/вечірня': '0', 'індивід_заочна': '0', 'індивід_дуальна': '0',
-              'кр': '2', 'кп': '3', 'зах_кр': '1', 'зах_кп': '1', 'нав_практ1': '20', 'нав_практ2': '1', 'вир_практ1': '0', 'вир_практ2': '0.5', 'вир_пр_переддипломна': '0.5', 'студ_нав_практ': '15', 'студ_вир_практ': '90', 'атест_ЕК': '2', 'атест_екз_консультації': '8', 'квал_роб_керівництво1': '0.5', 'квал_роб_керівництво2_до_5к': '3', 'квал_роб_керівництво2_5_та_6к': '10.5', 'квал_роб_рецензування_до_5к': '0', 'квал_роб_рецензування_5_та_6к': '0', 'D1coeff': '30', 'E1coeff': '15', 'НПП_витрати': '48', 8: 'D:/Учеба/7_семестр/курсавая/tests/5 к. 2022.xlsx', 'plan_vart': 'D:/Учеба/7_семестр/курсавая/tests/5 к. 2022.xlsx', 9: 'Головна'}
+    values = {0: '580', 1: '17100', 2: '1.22', 3: '10590.41', 4: '', 'Переглянути': '', 5: '', 'Переглянути0': '', 'filetrue': False, 6: True, 7: '', 'dop_file': '', 'вибір_дисц_бакалавр_денна': '0.7', 'вибір_дисц_магістр_денна': '0.76', 'вибір_дисц_бакалавр_заочна': '0.17', 'вибір_дисц_магістр_заочна': '0.1', 'вибір_дисц_бакалавр_вечірня': '0.64', 'екз': '4', 'пров_екз': '0', 'конс_пред_екз': '2', 'заліки': '0', 'студ_зал': '25', 'пот_конс_денна': '2', 'пот_конс_вечірня': '2', 'пот_конс_заочна': '4', 'пот_конс_дуальна': '10', 'академ_груп': '25', 'індивід_денна/вечірня': '0', 'індивід_заочна': '0', 'індивід_дуальна': '0', 'кр': '2', 'кп': '3', 'зах_кр': '1', 'зах_кп': '1', 'нав_практ1': '20', 'нав_практ2': '1', 'вир_практ1': '0', 'вир_практ2': '0.5', 'вир_пр_переддипломна': '0.5', 'студ_нав_практ': '15', 'студ_вир_практ': '90', 'атест_ЕК': '2', 'атест_екз_консультації': '8', 'квал_роб_керівництво1': '0.5', 'квал_роб_керівництво2_до_5к': '3', 'квал_роб_керівництво2_5_та_6к': '10.5', 'квал_роб_рецензування_до_5к': '0', 'квал_роб_рецензування_5_та_6к': '0', 'D1coeff': '30', 'E1coeff': '15', 'НПП_витрати': '48', 8: 'D:/Учеба/7_семестр/курсавая/tests/New folder/БГ 2022.xlsx', 'plan_vart': 'D:/Учеба/7_семестр/курсавая/tests/New folder/ПА ПК 2022.xlsx', 9: 'Головна'}
     print(count_price_file_open(values['plan_vart'], values=values))
     # for i in range(1,61):
     #     print(i, amount_of_subgroups_counter(i, 15))
