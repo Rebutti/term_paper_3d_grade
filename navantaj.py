@@ -208,6 +208,7 @@ def minuses_counter(sheet: openpyxl.Workbook, kil_gruops, lpl, amount_of_1weeks,
         b = 0
         if sheet[letter+str(row)].value != None:
             kol5 = find_number_pg(sheet, letter, row)
+            
             kol17, kol21 = validation_for_hours_for_lessons(
                 sheet, 'Q', 'U', row)
             if type(kol5) == tuple:
@@ -255,8 +256,10 @@ def minuses_counter(sheet: openpyxl.Workbook, kil_gruops, lpl, amount_of_1weeks,
 
 
 def find_number_pg(sheet, letter, row):
+    if sheet[letter+str(row)].value == ' ':
+        return 0
     try:
-        kol = float(sheet[letter+str(row)].value.strip())
+        kol = float(sheet[letter+str(row)].value)
         return kol
     except:
         kol = len(str(sheet[letter+str(row)].value).strip().split(' '))+1
