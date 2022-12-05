@@ -182,7 +182,7 @@ def main():
             open_window = True
 
         event, values = window.read()
-        print(values, event)
+        # print(values, event)
         if event == "Відмінити" or event == None or event == "cancel":
             flag = 0
             window.close()
@@ -194,7 +194,6 @@ def main():
             continue
         else:
             flag = 1
-        print(len(values))
         if len(values) < 6:
             sg.popup('Ви ввели некоректні данні: ', v)
             break
@@ -214,7 +213,6 @@ def main():
                             break
                 else:
                     try:
-                        print(k,v)
                         v = (float(v))
                     except:
                         sg.popup('Ви ввели некоректні данні: ', v)
