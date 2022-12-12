@@ -141,7 +141,7 @@ def main():
                        [sg.InputText(values[1])],
                        [sg.Text('Відрахування ЄСВ')],
                        [sg.InputText(values[2])],
-                       [sg.Text('Певна величина')],
+                       [sg.Text('Витрати на оздоровлення:')],
                        [sg.InputText(values[3])],
                        [sg.Text('Навчальний план')],
                        [sg.InputText(size=(31, 1)
