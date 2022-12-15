@@ -124,7 +124,7 @@ def findatect(sheetfile1, kil_stud, values, sheet):
     for atest in atestacia_adress:
         b = re.search('[(].+[)]', atest[0])
         if b == None:
-            exz_or_icpit += int(values["атест_екз_консультації"])
+            exz_or_icpit += float(values["атест_екз_консультації"])
             continue
         a = b.span()
         atest[0] = atest[0][a[0]:a[1]].replace('(', '').replace(')', '')
@@ -298,7 +298,7 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
         sheetfile1["T"+str(number)].value if sheetfile1["T"+str(number)].value != None else 0), 2)
     labi2 = toFixed(float(
         sheetfile1["U"+str(number)].value if sheetfile1["U"+str(number)].value != None else 0), 2)
-    if kil_stud > int(values["студ_зал"]):
+    if kil_stud > float(values["студ_зал"]):
         spec_chislo = 2
     else:
         spec_chislo = 1
@@ -310,13 +310,16 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
         kilkist_groups*spec_chislo
 
     exzamens = str(sheetfile1["G"+str(number)].value).strip().split(' ')
+    for el in exzamens:
+        if el == '':
+            exzamens.remove(el)
     zaliki = str(sheetfile1["H"+str(number)].value).strip().split(' ')
     for el in zaliki:
         if el == '':
             zaliki.remove(el)
     all_hours = sheetfile1["M"+str(number)].value
 
-    dia3 = kil_stud/int(values["екз"])
+    dia3 = kil_stud*float(values["екз"])
     if dia3 > 1:
         dia3 = int(str(decimal.Decimal(dia3).quantize(
             decimal.Decimal('0'), rounding=decimal.ROUND_HALF_UP)))
@@ -327,13 +330,13 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
     zaliki = [int(i) for i in zaliki]
     zaliki = sum(zaliki)
     dia3 *= exzamens
-    dia4 = exzamens*int(values["пров_екз"])*kilkist_groups
+    dia4 = exzamens*float(values["пров_екз"])*kilkist_groups
 
-    dia5 = exzamens*int(values["конс_пред_екз"])*kilkist_groups
-    if kil_stud > int(values["студ_зал"]):
-        dia6 = zaliki*int(values["заліки"])*kilkist_groups
+    dia5 = exzamens*float(values["конс_пред_екз"])*kilkist_groups
+    if kil_stud > float(values["студ_зал"]):
+        dia6 = zaliki*float(values["заліки"])*kilkist_groups
     else:
-        dia6 = zaliki*int(values["заліки"])/2
+        dia6 = zaliki*float(values["заліки"])/2
 
     k_pot_kons = findgtype(sheetfile1)
     if k_pot_kons == "Не вдалося знайти комірку з даними про групу":
@@ -361,8 +364,8 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
         k_indiv = values['індивід_дуальна']
     else:
         k_pot_kons = 1
-    k_pot_kons = int(k_pot_kons)
-    dia7 = all_hours*k_pot_kons*kil_stud/100/int(values["академ_груп"])
+    k_pot_kons = float(k_pot_kons)
+    dia7 = all_hours*k_pot_kons*kil_stud/100*float(values["академ_груп"])
     kil_individ = 0
     Kr = 0
     Kp = 0
@@ -402,7 +405,7 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
                     kil_stud*kil_tij_for_prakt
                 continue
             if name_.find("навчальна") != -1:
-                if kil_stud >= int(values["студ_нав_практ"]):
+                if kil_stud >= float(values["студ_нав_практ"]):
                     dia13 += float(values["нав_практ1"]) * \
                         kil_tij_for_prakt*kilkist_groups
                 else:

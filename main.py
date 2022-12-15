@@ -123,15 +123,21 @@ def main():
             [sg.Text('К(квал_роб_рецензування_5_та_6к):'),
              sg.InputText(values["квал_роб_рецензування_5_та_6к"], size=(5, 1),
                           do_not_clear=True, key="квал_роб_рецензування_5_та_6к")],
-            [sg.Text('К(D1coeff):'),
+            [sg.Text('К(потоку):'),
+             sg.InputText(values["поток"], size=(5, 1),
+                          do_not_clear=True, key="поток")],
+            [sg.Text('К(групи):'),
              sg.InputText(values["D1coeff"], size=(5, 1),
                           do_not_clear=True, key="D1coeff")],
-            [sg.Text('К(E1coeff):'),
+            [sg.Text('К(підгрупи):'),
              sg.InputText(values["E1coeff"], size=(5, 1),
                           do_not_clear=True, key="E1coeff")],
             [sg.Text('К(НПП_витрати):'),
              sg.InputText(values['НПП_витрати'], size=(5, 1),
                           do_not_clear=True, key='НПП_витрати')],
+            [sg.Text('К(поточні консультації):'),
+             sg.InputText(values['поточні_консультації'], size=(5, 1),
+                          do_not_clear=True, key='поточні_консультації')],
             [sg.Submit("Зберегти", key='save_coef')],
 
         ]
@@ -159,11 +165,21 @@ def main():
                        [sg.Submit("Підтвердити"), sg.Cancel("Відмінити")],
                        ]
         layout_vart = [
-                       [sg.Text('Навчальний план')],
-                       [sg.InputText(size=(31, 1)
-                                     ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="plan_vart")],
-                       [sg.Submit("Підтвердити", key='count_vartist'), sg.Cancel("Відмінити", key="cancel")],
-                       ]
+            [sg.Text('Навчальний план')],
+            [sg.InputText(size=(31, 1)
+                          ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="plan_vart")],
+            [sg.Text('К(НПП_витрати):'),
+             sg.InputText(values['НПП_витрати'], size=(5, 1),
+                          do_not_clear=True, key='НПП_витрати')],
+            [sg.Text('Ціна бюджета:'),
+             sg.InputText(values['бюджет'], size=(10, 1),
+                          do_not_clear=True, key='бюджет')],
+            [sg.Text('Ціна контракту:'),
+             sg.InputText(values['контракт'], size=(10, 1),
+                          do_not_clear=True, key='контракт')],
+            [sg.Submit("Підтвердити", key='count_vartist'),
+             sg.Cancel("Відмінити", key="cancel")],
+        ]
         layout_set = [
             [sg.Column(layout_settings, scrollable=True,  vertical_scroll_only=True, size_subsample_height=1.5, size_subsample_width=0.54)]]
         layout_main1 = [
@@ -182,7 +198,7 @@ def main():
             open_window = True
 
         event, values = window.read()
-        # print(values, event)
+        print(values, event)
         if event == "Відмінити" or event == None or event == "cancel":
             flag = 0
             window.close()
