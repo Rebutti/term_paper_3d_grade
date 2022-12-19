@@ -11,7 +11,7 @@ def findgtype(sheet):
     letter = 'A'
     number = 1
     groupname = None
-    while number < 20:
+    while number < 50:
         if sheet[letter+str(number)].value != None:
             if 'група' in sheet[letter+str(number)].value.lower():
                 groupname = sheet[letter+str(number)].value
@@ -47,7 +47,9 @@ def find_vibir_disc(sheetfile1, obov_disc: int):
     obov_disc = obov_disc+1
     kilkist_obov_disc = 0
     while True:
+        print(sheetfile1[letter+str(obov_disc)].value)
         if sheetfile1[letter+str(obov_disc)].value == None:
+            obov_disc += 1
             continue
         if sheetfile1[letter+str(obov_disc)].value.lower().find("вибірковими") != -1:
             break
@@ -57,6 +59,19 @@ def find_vibir_disc(sheetfile1, obov_disc: int):
             kilkist_obov_disc += 1
     return kilkist_obov_disc
 
+def find_atec_ex(sheetfile1, obov_disc: int):
+    letter = 'B'
+    obov_disc = 1
+    for row in range(1, 51):
+        if sheetfile1[letter+str(obov_disc)].value == None:
+            obov_disc+=1
+            continue
+        if str(sheetfile1[letter+str(obov_disc)].value).lower().find("атестаційний екзамен (ек)") != -1:
+            return 1
+        
+        else:
+            obov_disc += 1
+    return 0
 
 def findprakt(sheetfile1):
     letter = 'B'
@@ -113,7 +128,7 @@ def findatect(sheetfile1, kil_stud, values, sheet):
         return 0
     counter = 0
     atestacia_adress = []
-    while counter < 10:
+    while counter < 50:
         if sheetfile1["B"+str(number)].value == None:
             counter += 1
         else:
@@ -428,6 +443,8 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
         dia14 + vibirkovi + minus_hours + \
         minuses_counter(sheetfile1, kilkist_groups, number,
                         kil_tij_1_cem, kil_tij_2_cem, spec_chislo)
+    # print(nav, ' = nav')
+    # print(f"{sem1}+{sem2} + {dia3} + {dia4} +{dia5} + {dia6} + {dia7} + {dia8} + {dia9}+{dia10}+{dia11}+{dia12}+{dia13} + {dia14} + {vibirkovi} + {minus_hours}+{minuses_counter(sheetfile1, kilkist_groups, number, kil_tij_1_cem, kil_tij_2_cem, spec_chislo)}")
     nav = int(str(decimal.Decimal(nav).quantize(
         decimal.Decimal('0'), rounding=decimal.ROUND_HALF_UP)))
     return nav

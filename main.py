@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 from excelreader import reader
 from pathlib import Path
 from update_coefficients import save_coef, check_coef
+from count_price import count_price_file_open
 # from screeninfo import get_monitors
 
 # def get_monitor_size():
@@ -203,6 +204,9 @@ def main():
             flag = 0
             window.close()
             break
+        elif event == 'count_vartist':
+            sg.popup(count_price_file_open(values['plan_vart'], values))
+            continue
         elif event == 'save_coef':
             save_coef(values, False)
             save_coef(values)
