@@ -2,12 +2,7 @@ import PySimpleGUI as sg
 from excelreader import reader
 from pathlib import Path
 from update_coefficients import save_coef, check_coef
-# from screeninfo import get_monitors
-
-# def get_monitor_size():
-#     for m in get_monitors():
-#         if m.is_primary == False:
-#             return m
+from count_price import count_price_file_open
 
 
 def main():
@@ -123,15 +118,21 @@ def main():
             [sg.Text('К(квал_роб_рецензування_5_та_6к):'),
              sg.InputText(values["квал_роб_рецензування_5_та_6к"], size=(5, 1),
                           do_not_clear=True, key="квал_роб_рецензування_5_та_6к")],
-            [sg.Text('К(D1coeff):'),
+            [sg.Text('К(потоку):'),
+             sg.InputText(values["поток"], size=(5, 1),
+                          do_not_clear=True, key="поток")],
+            [sg.Text('К(групи):'),
              sg.InputText(values["D1coeff"], size=(5, 1),
                           do_not_clear=True, key="D1coeff")],
-            [sg.Text('К(E1coeff):'),
+            [sg.Text('К(підгрупи):'),
              sg.InputText(values["E1coeff"], size=(5, 1),
                           do_not_clear=True, key="E1coeff")],
             [sg.Text('К(НПП_витрати):'),
              sg.InputText(values['НПП_витрати'], size=(5, 1),
                           do_not_clear=True, key='НПП_витрати')],
+            [sg.Text('К(поточні консультації):'),
+             sg.InputText(values['поточні_консультації'], size=(5, 1),
+                          do_not_clear=True, key='поточні_консультації')],
             [sg.Submit("Зберегти", key='save_coef')],
 
         ]
@@ -141,7 +142,7 @@ def main():
                        [sg.InputText(values[1])],
                        [sg.Text('Відрахування ЄСВ')],
                        [sg.InputText(values[2])],
-                       [sg.Text('Певна величина')],
+                       [sg.Text('Витрати на оздоровлення:')],
                        [sg.InputText(values[3])],
                        [sg.Text('Навчальний план')],
                        [sg.InputText(size=(31, 1)
@@ -159,11 +160,21 @@ def main():
                        [sg.Submit("Підтвердити"), sg.Cancel("Відмінити")],
                        ]
         layout_vart = [
-                       [sg.Text('Навчальний план')],
-                       [sg.InputText(size=(31, 1)
-                                     ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="plan_vart")],
-                       [sg.Submit("Підтвердити", key='count_vartist'), sg.Cancel("Відмінити", key="cancel")],
-                       ]
+            [sg.Text('Навчальний план')],
+            [sg.InputText(size=(31, 1)
+                          ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="plan_vart")],
+            [sg.Text('К(НПП_витрати):'),
+             sg.InputText(values['НПП_витрати'], size=(5, 1),
+                          do_not_clear=True, key='НПП_витрати')],
+            [sg.Text('Ціна бюджету:'),
+             sg.InputText(values['бюджет'], size=(10, 1),
+                          do_not_clear=True, key='бюджет')],
+            [sg.Text('Ціна контракту:'),
+             sg.InputText(values['контракт'], size=(10, 1),
+                          do_not_clear=True, key='контракт')],
+            [sg.Submit("Підтвердити", key='count_vartist'),
+             sg.Cancel("Відмінити", key="cancel")],
+        ]
         layout_set = [
             [sg.Column(layout_settings, scrollable=True,  vertical_scroll_only=True, size_subsample_height=1.5, size_subsample_width=0.54)]]
         layout_main1 = [
@@ -187,6 +198,9 @@ def main():
             flag = 0
             window.close()
             break
+        elif event == 'count_vartist':
+            sg.popup(count_price_file_open(values['plan_vart'], values))
+            continue
         elif event == 'save_coef':
             save_coef(values, False)
             save_coef(values)

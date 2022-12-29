@@ -11,7 +11,7 @@ def findgtype(sheet):
     letter = 'A'
     number = 1
     groupname = None
-    while number < 20:
+    while number < 50:
         if sheet[letter+str(number)].value != None:
             if 'група' in sheet[letter+str(number)].value.lower():
                 groupname = sheet[letter+str(number)].value
@@ -48,6 +48,7 @@ def find_vibir_disc(sheetfile1, obov_disc: int):
     kilkist_obov_disc = 0
     while True:
         if sheetfile1[letter+str(obov_disc)].value == None:
+            obov_disc += 1
             continue
         if sheetfile1[letter+str(obov_disc)].value.lower().find("вибірковими") != -1:
             break
@@ -57,6 +58,19 @@ def find_vibir_disc(sheetfile1, obov_disc: int):
             kilkist_obov_disc += 1
     return kilkist_obov_disc
 
+def find_atec_ex(sheetfile1, obov_disc: int):
+    letter = 'B'
+    obov_disc = 1
+    for row in range(1, 51):
+        if sheetfile1[letter+str(obov_disc)].value == None:
+            obov_disc+=1
+            continue
+        if str(sheetfile1[letter+str(obov_disc)].value).lower().find("атестаційний екзамен (ек)") != -1:
+            return 1
+        
+        else:
+            obov_disc += 1
+    return 0
 
 def findprakt(sheetfile1):
     letter = 'B'
@@ -113,7 +127,7 @@ def findatect(sheetfile1, kil_stud, values, sheet):
         return 0
     counter = 0
     atestacia_adress = []
-    while counter < 10:
+    while counter < 50:
         if sheetfile1["B"+str(number)].value == None:
             counter += 1
         else:
@@ -124,7 +138,7 @@ def findatect(sheetfile1, kil_stud, values, sheet):
     for atest in atestacia_adress:
         b = re.search('[(].+[)]', atest[0])
         if b == None:
-            exz_or_icpit += int(values["атест_екз_консультації"])
+            exz_or_icpit += float(values["атест_екз_консультації"])
             continue
         a = b.span()
         atest[0] = atest[0][a[0]:a[1]].replace('(', '').replace(')', '')
@@ -277,12 +291,17 @@ def validation_for_hours_for_lessons(sheet, letter_1_col, letter_2_col, row):
         column2 = 0
     return column1, column2
 
+def find_weeks_amount(sheetfile1):
+    letter = 'O'
+    for row in range(1, 51):
+        if str(sheetfile1[letter+str(row)].value).lower().find("тижнів") != -1:
+            return float(sheetfile1[letter+str(row)].value.strip().replace(',','.').split()[0]), float(sheetfile1['S'+str(row)].value.strip().replace(',','.').split()[0])
+    return None, None
 
 def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
     number1 = findlpl(sheetfile1)
     number = number1[0]
-    kil_tij_1_cem = int(str(sheetfile1["O7"].value).strip()[:2])
-    kil_tij_2_cem = int(str(sheetfile1["S7"].value).strip()[:2])
+    kil_tij_1_cem, kil_tij_2_cem = find_weeks_amount(sheetfile1)
     kilkist_groups = find_kil_groups(sheetfile1)
     if kilkist_groups == 'Не вдалося знайти комірку з даними про кількіть груп':
         return (kilkist_groups, 'Error')
@@ -298,7 +317,7 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
         sheetfile1["T"+str(number)].value if sheetfile1["T"+str(number)].value != None else 0), 2)
     labi2 = toFixed(float(
         sheetfile1["U"+str(number)].value if sheetfile1["U"+str(number)].value != None else 0), 2)
-    if kil_stud > int(values["студ_зал"]):
+    if kil_stud > float(values["студ_зал"]):
         spec_chislo = 2
     else:
         spec_chislo = 1
@@ -310,13 +329,16 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
         kilkist_groups*spec_chislo
 
     exzamens = str(sheetfile1["G"+str(number)].value).strip().split(' ')
+    for el in exzamens:
+        if el == '':
+            exzamens.remove(el)
     zaliki = str(sheetfile1["H"+str(number)].value).strip().split(' ')
     for el in zaliki:
         if el == '':
             zaliki.remove(el)
     all_hours = sheetfile1["M"+str(number)].value
 
-    dia3 = kil_stud/int(values["екз"])
+    dia3 = kil_stud*float(values["екз"])
     if dia3 > 1:
         dia3 = int(str(decimal.Decimal(dia3).quantize(
             decimal.Decimal('0'), rounding=decimal.ROUND_HALF_UP)))
@@ -327,13 +349,13 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
     zaliki = [int(i) for i in zaliki]
     zaliki = sum(zaliki)
     dia3 *= exzamens
-    dia4 = exzamens*int(values["пров_екз"])*kilkist_groups
+    dia4 = exzamens*float(values["пров_екз"])*kilkist_groups
 
-    dia5 = exzamens*int(values["конс_пред_екз"])*kilkist_groups
-    if kil_stud > int(values["студ_зал"]):
-        dia6 = zaliki*int(values["заліки"])*kilkist_groups
+    dia5 = exzamens*float(values["конс_пред_екз"])*kilkist_groups
+    if kil_stud > float(values["студ_зал"]):
+        dia6 = zaliki*float(values["заліки"])*kilkist_groups
     else:
-        dia6 = zaliki*int(values["заліки"])/2
+        dia6 = zaliki*float(values["заліки"])/2
 
     k_pot_kons = findgtype(sheetfile1)
     if k_pot_kons == "Не вдалося знайти комірку з даними про групу":
@@ -361,8 +383,8 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
         k_indiv = values['індивід_дуальна']
     else:
         k_pot_kons = 1
-    k_pot_kons = int(k_pot_kons)
-    dia7 = all_hours*k_pot_kons*kil_stud/100/int(values["академ_груп"])
+    k_pot_kons = float(k_pot_kons)
+    dia7 = all_hours*k_pot_kons*kil_stud/100*float(values["академ_груп"])
     kil_individ = 0
     Kr = 0
     Kp = 0
@@ -402,7 +424,7 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
                     kil_stud*kil_tij_for_prakt
                 continue
             if name_.find("навчальна") != -1:
-                if kil_stud >= int(values["студ_нав_практ"]):
+                if kil_stud >= float(values["студ_нав_практ"]):
                     dia13 += float(values["нав_практ1"]) * \
                         kil_tij_for_prakt*kilkist_groups
                 else:
@@ -425,6 +447,8 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
         dia14 + vibirkovi + minus_hours + \
         minuses_counter(sheetfile1, kilkist_groups, number,
                         kil_tij_1_cem, kil_tij_2_cem, spec_chislo)
+    # print('sem1 = ', sem1, 'sem2 = ', sem2, 'dia3 = ', dia3, 'dia4 = ', dia4, 'dia5 = ', dia5, 'dia6 = ', dia6, 'dia7 = ', dia7, 'dia8 = ', dia8, 'dia9 = ', dia9, 'dia10 = ', dia10, 'dia11 = ', dia11, 'dia12 = ', dia12, 'dia13 = ', dia13, 'dia14 = ', dia14, 'vibirkovi = ', vibirkovi, 'minus_hours = ', minus_hours, "minuses_counter(sheetfile1, kilkist_groups, number, kil_tij_1_cem, kil_tij_2_cem, spec_chislo)", minuses_counter(sheetfile1, kilkist_groups, number, kil_tij_1_cem, kil_tij_2_cem, spec_chislo))
+    # print(f"{sem1}+{sem2} + {dia3} + {dia4} +{dia5} + {dia6} + {dia7} + {dia8} + {dia9}+{dia10}+{dia11}+{dia12}+{dia13} + {dia14} + {vibirkovi} + {minus_hours}+{minuses_counter(sheetfile1, kilkist_groups, number, kil_tij_1_cem, kil_tij_2_cem, spec_chislo)}")
     nav = int(str(decimal.Decimal(nav).quantize(
         decimal.Decimal('0'), rounding=decimal.ROUND_HALF_UP)))
     return nav
