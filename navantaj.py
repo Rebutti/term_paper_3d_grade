@@ -47,7 +47,6 @@ def find_vibir_disc(sheetfile1, obov_disc: int):
     obov_disc = obov_disc+1
     kilkist_obov_disc = 0
     while True:
-        print(sheetfile1[letter+str(obov_disc)].value)
         if sheetfile1[letter+str(obov_disc)].value == None:
             obov_disc += 1
             continue
@@ -292,12 +291,17 @@ def validation_for_hours_for_lessons(sheet, letter_1_col, letter_2_col, row):
         column2 = 0
     return column1, column2
 
+def find_weeks_amount(sheetfile1):
+    letter = 'O'
+    for row in range(1, 51):
+        if str(sheetfile1[letter+str(row)].value).lower().find("тижнів") != -1:
+            return float(sheetfile1[letter+str(row)].value.strip().replace(',','.').split()[0]), float(sheetfile1['S'+str(row)].value.strip().replace(',','.').split()[0])
+    return None, None
 
 def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
     number1 = findlpl(sheetfile1)
     number = number1[0]
-    kil_tij_1_cem = int(str(sheetfile1["O7"].value).strip()[:2])
-    kil_tij_2_cem = int(str(sheetfile1["S7"].value).strip()[:2])
+    kil_tij_1_cem, kil_tij_2_cem = find_weeks_amount(sheetfile1)
     kilkist_groups = find_kil_groups(sheetfile1)
     if kilkist_groups == 'Не вдалося знайти комірку з даними про кількіть груп':
         return (kilkist_groups, 'Error')
@@ -443,7 +447,7 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
         dia14 + vibirkovi + minus_hours + \
         minuses_counter(sheetfile1, kilkist_groups, number,
                         kil_tij_1_cem, kil_tij_2_cem, spec_chislo)
-    # print(nav, ' = nav')
+    # print('sem1 = ', sem1, 'sem2 = ', sem2, 'dia3 = ', dia3, 'dia4 = ', dia4, 'dia5 = ', dia5, 'dia6 = ', dia6, 'dia7 = ', dia7, 'dia8 = ', dia8, 'dia9 = ', dia9, 'dia10 = ', dia10, 'dia11 = ', dia11, 'dia12 = ', dia12, 'dia13 = ', dia13, 'dia14 = ', dia14, 'vibirkovi = ', vibirkovi, 'minus_hours = ', minus_hours, "minuses_counter(sheetfile1, kilkist_groups, number, kil_tij_1_cem, kil_tij_2_cem, spec_chislo)", minuses_counter(sheetfile1, kilkist_groups, number, kil_tij_1_cem, kil_tij_2_cem, spec_chislo))
     # print(f"{sem1}+{sem2} + {dia3} + {dia4} +{dia5} + {dia6} + {dia7} + {dia8} + {dia9}+{dia10}+{dia11}+{dia12}+{dia13} + {dia14} + {vibirkovi} + {minus_hours}+{minuses_counter(sheetfile1, kilkist_groups, number, kil_tij_1_cem, kil_tij_2_cem, spec_chislo)}")
     nav = int(str(decimal.Decimal(nav).quantize(
         decimal.Decimal('0'), rounding=decimal.ROUND_HALF_UP)))

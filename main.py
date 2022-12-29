@@ -3,12 +3,6 @@ from excelreader import reader
 from pathlib import Path
 from update_coefficients import save_coef, check_coef
 from count_price import count_price_file_open
-# from screeninfo import get_monitors
-
-# def get_monitor_size():
-#     for m in get_monitors():
-#         if m.is_primary == False:
-#             return m
 
 
 def main():
@@ -172,7 +166,7 @@ def main():
             [sg.Text('К(НПП_витрати):'),
              sg.InputText(values['НПП_витрати'], size=(5, 1),
                           do_not_clear=True, key='НПП_витрати')],
-            [sg.Text('Ціна бюджета:'),
+            [sg.Text('Ціна бюджету:'),
              sg.InputText(values['бюджет'], size=(10, 1),
                           do_not_clear=True, key='бюджет')],
             [sg.Text('Ціна контракту:'),
@@ -199,7 +193,7 @@ def main():
             open_window = True
 
         event, values = window.read()
-        print(values, event)
+        # print(values, event)
         if event == "Відмінити" or event == None or event == "cancel":
             flag = 0
             window.close()

@@ -13,20 +13,16 @@ def count_price_file_open(filepath1, values):
         file1.close()
         return 'У Вашому файлі неправильна кількість планів. Має бути 2 для магістрів, 4 для бакалаврів'
     file_save = openpyxl.load_workbook('розрахунок вартості шаблон.xlsx')
-    print('sheets in file = ', sheetsfile1)
     sheet_names = file_save.sheetnames
-    print('sheet_names = ', sheet_names)
     sheet_number = 0
     for sheet in sheetsfile1:
         sheetfile1 = file1[sheet]
         result = count_price(sheetfile1, values=values, file_save=file_save, sheet_name=sheet_names[sheet_number])
         sheet_number+=1
         counts.append(result)
-    # print(counts)
     
     for sheet in sheet_names:
         sheetfile1 = file_save[sheet]
-        print(sheetfile1["AA"+str(4)].value, ' = iz faila')
 
     file_save.save('розрахунок вартості.xlsx')
     file1.close()
@@ -108,7 +104,7 @@ def npp_counter(values, navantaj):
 
 
 def bill_counter(values, npp_bills):
-    return toFixed(npp_bills/float(values['НПП_витрати'])*100, 2)
+    return toFixed(npp_bills/float(values['НПП_витрати1'])*100, 2)
 
 def find_vir_pr(sheetfile1, start_row):
     letter = 'B'
@@ -124,16 +120,14 @@ def find_kval_rob(sheetfile1, start_row):
     kil_rob = 0
     for row in range(start_row, start_row+30):
         if sheetfile1[letter+str(row)].value != None:
-            # print(sheetfile1[letter+str(row)].value)
             if str(sheetfile1[letter+str(row)].value).lower().find("кваліфікаційна робота") != -1:
-                kil_rob += 1
-    # print(kil_rob)
+                # kil_rob += 1
+                return 1
     return kil_rob
 
 
 def count_price(sheetfile1, values, file_save, sheet_name):
     all_counts = []
-    print(sheetfile1.title, ' = sheetfile1.title')
     number1 = findlpl(sheetfile1)
     number = number1[0]
     kil_tij_1_cem, kil_tij_2_cem = find_weeks_amount(sheetfile1)
@@ -205,13 +199,14 @@ def count_price(sheetfile1, values, file_save, sheet_name):
     else:
         k_pot_kons = 1
 
-
+    file_save_sheet = file_save[sheet_name]
+    file_save_sheet['AB2'] = float(values['бюджет'])
+    file_save_sheet['AC2'] = float(values['контракт'])
 
     kil_indiv_zavd = 0
 
     for student_number in range(1, 91):
         # for sheet_name in sheet_names:
-        file_save_sheet = file_save[sheet_name]
         file_save_sheet['A'+str(row_number)] = student_number
         amount_of_potoks = amount_of_potoks_counter(
             student_number, int(values['поток']))
@@ -251,19 +246,18 @@ def count_price(sheetfile1, values, file_save, sheet_name):
 
         file_save_sheet['Z'+str(row_number)] = toFixed(navantajenya, 2)
 
-        # print(f"{float(lekciya1)}*{float(kil_tij_1_cem)}*{amount_of_potoks}+{float(praktika1)}*{float(kil_tij_1_cem)}*{float(amount_of_groups)}+{float(labi1)}*{float(kil_tij_1_cem)}*{float(amount_of_subgroups)}+{float(lekciya2)}*{float(kil_tij_2_cem)}*{float(amount_of_potoks)}+{float(praktika2)}*{float(kil_tij_2_cem)}*{float(amount_of_groups)}+{float(labi2)}*{float(kil_tij_2_cem)}*{float(amount_of_subgroups)}+{float(exzamens)}*{float(values['пров_екз'])}+{float(exzamens)}*{float(values['конс_пред_екз'])}*{float(zaliki)}*{float(values['заліки'])}+{current_consultations}*{float(values['поточні_консультації'])}*{student_number}/{float(values['студ_зал'])}+{student_number}*{kil_indiv_zavd}*{float(k_indiv)}+{float(result_kr)}*({float(values['кр'])}+{float(values['зах_кр'])})+{float(result_kp)}*({float(values['кп'])}+{float(values['зах_кп'])})+{float(kil_tij_vir_pr)}*{float(values['вир_пр_переддипломна'])}*{student_number}+{vibir_disc}*{student_number}*{float(k_vibirkovi_disc)}+{kil_atec_ex}*{student_number}*{float(values['атест_ЕК'])}+{findatect(sheetfile1,student_number,values, sheetfile1.title)}")
-        # print(vibir_disc*student_number*float(k_vibirkovi_disc)) 
 
 
-        print('navantajenya2 = ',navantajenya)
+
+        print('navantajenya2 = ', navantajenya)
         npp_bills = npp_counter(values, navantajenya)
         file_save_sheet['AA'+str(row_number)] = toFixed(npp_bills, 2)
         all_bills = bill_counter(values, npp_bills)
         file_save_sheet['AB'+str(row_number)] = toFixed(all_bills, 2)
         bill_of_student = all_bills/student_number
         all_counts.append((navantajenya, npp_bills, all_bills, bill_of_student))
+        file_save_sheet['AC'+str(row_number)] = toFixed(all_bills, 2)/student_number
 
-        # print(student_number)
         row_number += 1
     # file_save_sheet.title = sheetfile1.title
     return 'Результати збережені у файл "розрахунок вартості.xlsx!"'
