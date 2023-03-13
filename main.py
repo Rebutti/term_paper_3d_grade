@@ -161,8 +161,10 @@ def main():
                        ]
         layout_vart = [
             [sg.Text('Навчальний план')],
+            # [sg.InputText(size=(31, 1)
+            #               ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="plan_vart")],
             [sg.InputText(size=(31, 1)
-                          ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="plan_vart")],
+                          ), sg.FilesBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="plan_vart")],
             [sg.Text('К(НПП_витрати):'),
              sg.InputText(values['НПП_витрати'], size=(5, 1),
                           do_not_clear=True, key='НПП_витрати')],
@@ -199,7 +201,8 @@ def main():
             window.close()
             break
         elif event == 'count_vartist':
-            sg.popup(count_price_file_open(values['plan_vart'], values))
+            # print(values['plan_vart'])
+            sg.popup(count_price_file_open(values['plan_vart'].split(';'), values))
             continue
         elif event == 'save_coef':
             save_coef(values, False)

@@ -3,30 +3,43 @@ from navantaj import toFixed, navantaj, findlpl, find_vibir_disc, findgtype, fin
 from rentabel import findcourse
 import math
 
+def split_filename(filename):
+    return filename.split('.')[0]
 
-def count_price_file_open(filepath1, values):
-    counts = []
-    file1 = openpyxl.open(filepath1,
-                          read_only=True, data_only=True)  # открываем файл
-    sheetsfile1 = file1.sheetnames  # запоминаю все листы в файле
-    if len(sheetsfile1) != 2:
+
+def count_price_file_open(filepathes, values):
+    result_message = 'Результати збережені у файли:\n'
+    for filepath1 in filepathes:
+        counts = []
+        file1 = openpyxl.open(filepath1,
+                            read_only=True, data_only=True)  # открываем файл
+        sheetsfile1 = file1.sheetnames  # запоминаю все листы в файле
+        if len(sheetsfile1) != 2 and len(sheetsfile1) != 4 and len(sheetsfile1) != 1 and len(sheetsfile1) != 3:
+            file1.close()
+            return 'У Вашому файлі неправильна кількість планів. Має бути 2 для магістрів, 4 для бакалаврів'
+        elif len(sheetsfile1) == 4:
+            file_save = openpyxl.load_workbook('розрахунок вартості шаблон бакалавр.xlsx')
+        elif len(sheetsfile1) == 1:
+            file_save = openpyxl.load_workbook('розрахунок вартості шаблон бакалавр 1 рік.xlsx')
+        elif len(sheetsfile1) == 3:
+            file_save = openpyxl.load_workbook('розрахунок вартості шаблон бакалавр 3 рік.xlsx')
+        else:
+            file_save = openpyxl.load_workbook('розрахунок вартості шаблон.xlsx')
+        sheet_names = file_save.sheetnames
+        sheet_number = 0
+        for sheet in sheetsfile1:
+            sheetfile1 = file1[sheet]
+            result = count_price(sheetfile1, values=values, file_save=file_save, sheet_name=sheet_names[sheet_number])
+            sheet_number+=1
+            counts.append(result)
+        
+        for sheet in sheet_names:
+            sheetfile1 = file_save[sheet]
+        new_filename = split_filename(filepath1)+' розрахунок вартості.xlsx'
+        file_save.save(new_filename)
         file1.close()
-        return 'У Вашому файлі неправильна кількість планів. Має бути 2 для магістрів, 4 для бакалаврів'
-    file_save = openpyxl.load_workbook('розрахунок вартості шаблон.xlsx')
-    sheet_names = file_save.sheetnames
-    sheet_number = 0
-    for sheet in sheetsfile1:
-        sheetfile1 = file1[sheet]
-        result = count_price(sheetfile1, values=values, file_save=file_save, sheet_name=sheet_names[sheet_number])
-        sheet_number+=1
-        counts.append(result)
-    
-    for sheet in sheet_names:
-        sheetfile1 = file_save[sheet]
-
-    file_save.save('розрахунок вартості.xlsx')
-    file1.close()
-    return 'Результати збережені у файл "розрахунок вартості.xlsx!"'
+        result_message = result_message + new_filename+'\n'
+    return result_message
 
 
 def amount_of_groups_counter(amount_of_students, D1coeff):
