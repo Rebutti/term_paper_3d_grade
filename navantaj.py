@@ -75,22 +75,24 @@ def find_atec_ex(sheetfile1, obov_disc: int):
 def findprakt(sheetfile1):
     letter = 'B'
     number = 8
+    flag = 0
     a = []
     while number < 100:
 
         if sheetfile1[letter+str(number)].value != None:
             if str(sheetfile1[letter+str(number)].value).strip() == "Вид практики":
+                flag = 1
                 number += 1
                 a.append((sheetfile1[letter+str(number)
                                      ].value.strip().lower(), number))
                 number += 1
                 continue
-            elif str(sheetfile1[letter+str(number)].value).strip().lower().find("виробнича") != -1:
+            elif str(sheetfile1[letter+str(number)].value).strip().lower().find("виробнича") != -1 and flag==1:
                 a.append((sheetfile1[letter+str(number)
                                      ].value.strip().lower(), number))
                 number += 1
                 continue
-            elif str(sheetfile1[letter+str(number)].value).strip().lower().find("навчальна") != -1:
+            elif str(sheetfile1[letter+str(number)].value).strip().lower().find("навчальна") != -1 and flag==1:
                 a.append((sheetfile1[letter+str(number)
                                      ].value.strip().lower(), number))
                 number += 1
@@ -281,11 +283,11 @@ def find_number_pg(sheet, letter, row):
 
 
 def validation_for_hours_for_lessons(sheet, letter_1_col, letter_2_col, row):
-    if sheet[letter_1_col+str(row)].value != None:
+    if sheet[letter_1_col+str(row)].value != None and str(sheet[letter_1_col+str(row)].value).replace(' ', '') != '':
         column1 = float(sheet[letter_1_col+str(row)].value)
     else:
         column1 = 0
-    if sheet[letter_2_col+str(row)].value != None:
+    if sheet[letter_2_col+str(row)].value != None and str(sheet[letter_2_col+str(row)].value).replace(' ', '') != '':
         column2 = float(sheet[letter_2_col+str(row)].value)
     else:
         column2 = 0
