@@ -146,7 +146,7 @@ def main():
                        [sg.InputText(values[3])],
                        [sg.Text('Навчальний план')],
                        [sg.InputText(size=(31, 1)
-                                     ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),))],
+                                     ), sg.FilesBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),))],
                        [sg.Text('Розрахунок')],
                        [sg.InputText(size=(31, 1)
                                      ), sg.FileBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),))],
@@ -224,9 +224,9 @@ def main():
                         if a.is_file():
                             continue
                         else:
-                            sg.popup(
-                                'Ви ввели не правильний шлях до файлу: ', v)
-                            flag = 0
+                            v = v.split(';')
+                            print(v)
+                            flag = 2
                             break
                 else:
                     try:
@@ -235,8 +235,21 @@ def main():
                         sg.popup('Ви ввели некоректні данні: ', v)
                         flag = 0
                         break
-        if flag != 0:
+        if flag == 1:
             reader(values)
+            sg.popup('Програма закінчила свою роботу!')
+        if flag == 2:
+            chekpoint = False
+            for f in v:
+                print(f"f = {f}")
+                values[4] = f
+                if chekpoint == False:
+                    chekpoint = True
+                    reader(values)
+                else:
+                    values["filetrue"] = True
+                    values["dop_file"] = 'рентабельність.xlsx'
+                    reader(values)
             sg.popup('Програма закінчила свою роботу!')
 
 
