@@ -174,6 +174,48 @@ def main():
             [sg.Text('Ціна контракту:'),
              sg.InputText(values['контракт'], size=(10, 1),
                           do_not_clear=True, key='контракт')],
+            [sg.Text('Окремі ціни?')],
+                       [sg.Radio('Так',
+                                 "RADIO2", default=False, key="separate"),
+                       sg.Radio('Ні',
+                                "RADIO2", default=True)],
+            [sg.Text('1 курс бюджет:'),
+             sg.InputText(values['бюджет1'], size=(10, 1),
+                          do_not_clear=True, key='бюджет1')],
+            [sg.Text('2 курс бюджет:'),
+             sg.InputText(values['бюджет2'], size=(10, 1),
+                          do_not_clear=True, key='бюджет2')],
+            [sg.Text('3 курс бюджет:'),
+             sg.InputText(values['бюджет3'], size=(10, 1),
+                          do_not_clear=True, key='бюджет3')],
+            [sg.Text('4 курс бюджет:'),
+             sg.InputText(values['бюджет4'], size=(10, 1),
+                          do_not_clear=True, key='бюджет4')],
+            [sg.Text('5 курс бюджет:'),
+             sg.InputText(values['бюджет5'], size=(10, 1),
+                          do_not_clear=True, key='бюджет5')],
+            [sg.Text('6 курс бюджет:'),
+             sg.InputText(values['бюджет6'], size=(10, 1),
+                          do_not_clear=True, key='бюджет6')],
+            [sg.Text('1 курс контракт:'),
+             sg.InputText(values['контракт1'], size=(10, 1),
+                          do_not_clear=True, key='контракт1')],
+            [sg.Text('2 курс контракт:'),
+             sg.InputText(values['контракт2'], size=(10, 1),
+                          do_not_clear=True, key='контракт2')],
+            [sg.Text('3 курс контракт:'),
+             sg.InputText(values['контракт3'], size=(10, 1),
+                          do_not_clear=True, key='контракт3')],
+            [sg.Text('4 курс контракт:'),
+             sg.InputText(values['контракт4'], size=(10, 1),
+                          do_not_clear=True, key='контракт4')],
+            [sg.Text('5 курс контракт:'),
+             sg.InputText(values['контракт5'], size=(10, 1),
+                          do_not_clear=True, key='контракт5')],
+            [sg.Text('6 курс контракт:'),
+             sg.InputText(values['контракт6'], size=(10, 1),
+                          do_not_clear=True, key='контракт6')],
+
             [sg.Submit("Підтвердити", key='count_vartist'),
              sg.Cancel("Відмінити", key="cancel")],
         ]
@@ -225,7 +267,6 @@ def main():
                             continue
                         else:
                             v = v.split(';')
-                            print(v)
                             flag = 2
                             break
                 else:
@@ -241,7 +282,6 @@ def main():
         if flag == 2:
             chekpoint = False
             for f in v:
-                print(f"f = {f}")
                 values[4] = f
                 if chekpoint == False:
                     chekpoint = True

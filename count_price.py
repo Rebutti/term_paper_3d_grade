@@ -138,6 +138,34 @@ def find_kval_rob(sheetfile1, start_row):
                 return 1
     return kil_rob
 
+def get_price_for_budget(sheet_name, values):
+    if sheet_name[0] == '1':
+        return values['бюджет1']
+    elif sheet_name[0] == '2':
+        return values['бюджет2']
+    elif sheet_name[0] == '3':
+        return values['бюджет3']
+    elif sheet_name[0] == '4':
+        return values['бюджет4']
+    elif sheet_name[0] == '5':
+        return values['бюджет5']
+    else:
+        return values['бюджет6']
+    
+def get_price_for_contract(sheet_name, values):
+    if sheet_name[0] == '1':
+        return values['контракт1']
+    elif sheet_name[0] == '2':
+        return values['контракт2']
+    elif sheet_name[0] == '3':
+        return values['контракт3']
+    elif sheet_name[0] == '4':
+        return values['контракт4']
+    elif sheet_name[0] == '5':
+        return values['контракт5']
+    else:
+        return values['контракт6']
+
 
 def count_price(sheetfile1, values, file_save, sheet_name):
     all_counts = []
@@ -213,6 +241,10 @@ def count_price(sheetfile1, values, file_save, sheet_name):
         k_pot_kons = 1
 
     file_save_sheet = file_save[sheet_name]
+    if values['separate'] == True:
+        print('tyt')
+        values['бюджет'] = get_price_for_budget(sheet_name, values)
+        values['контракт'] = get_price_for_contract(sheet_name, values)
     file_save_sheet['AB2'] = float(values['бюджет'])
     file_save_sheet['AC2'] = float(values['контракт'])
 

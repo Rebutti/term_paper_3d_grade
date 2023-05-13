@@ -449,7 +449,6 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
         dia14 + vibirkovi + minus_hours + \
         minuses_counter(sheetfile1, kilkist_groups, number,
                         kil_tij_1_cem, kil_tij_2_cem, spec_chislo)
-    print(sheet)
     # print('sem1 = ', sem1, 'sem2 = ', sem2, 'dia3 = ', dia3, 'dia4 = ', dia4, 'dia5 = ', dia5, 'dia6 = ', dia6, 'dia7 = ', dia7, 'dia8 = ', dia8, 'dia9 = ', dia9, 'dia10 = ', dia10, 'dia11 = ', dia11, 'dia12 = ', dia12, 'dia13 = ', dia13, 'dia14 = ', dia14, 'vibirkovi = ', vibirkovi, 'minus_hours = ', minus_hours, "minuses_counter(sheetfile1, kilkist_groups, number, kil_tij_1_cem, kil_tij_2_cem, spec_chislo)", minuses_counter(sheetfile1, kilkist_groups, number, kil_tij_1_cem, kil_tij_2_cem, spec_chislo))
     # print(f"{sem1}+{sem2} + {dia3} + {dia4} +{dia5} + {dia6} + {dia7} + {dia8} + {dia9}+{dia10}+{dia11}+{dia12}+{dia13} + {dia14} + {vibirkovi} + {minus_hours}+{minuses_counter(sheetfile1, kilkist_groups, number, kil_tij_1_cem, kil_tij_2_cem, spec_chislo)}")
     nav = int(str(decimal.Decimal(nav).quantize(
