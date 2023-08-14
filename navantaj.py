@@ -56,6 +56,8 @@ def find_vibir_disc(sheetfile1, obov_disc: int):
         else:
             obov_disc += 1
             kilkist_obov_disc += 1
+        if obov_disc >= 100:
+            return "Не вийшло знайти поле 'Разом за вибірковими компонентами'"
     return kilkist_obov_disc
 
 def find_atec_ex(sheetfile1, obov_disc: int):
@@ -346,7 +348,10 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
             decimal.Decimal('0'), rounding=decimal.ROUND_HALF_UP)))
     else:
         dia3 = 1
-    exzamens = [int(i) for i in exzamens]
+    try:
+        exzamens = [int(i) for i in exzamens]
+    except ValueError:
+        return "Перевірте дані у стовбчику 14"
     exzamens = sum(exzamens)
     zaliki = [int(i) for i in zaliki]
     zaliki = sum(zaliki)
@@ -443,6 +448,8 @@ def navantaj(sheetfile1, values, kil_stud, sheet, course, minus_hours):
     kil_vibir_disc = 0
     if number1[1] == 1:
         kil_vibir_disc = find_vibir_disc(sheetfile1, number)
+        if kil_vibir_disc == "Не вийшло знайти поле 'Разом за вибірковими компонентами'":
+            return kil_vibir_disc
     vibirkovi = kil_vibir_disc*float(k_vibirkovi_disc)*kil_stud
     nav = sem1+sem2 + dia3 + dia4 + \
         dia5 + dia6 + dia7 + dia8 + dia9+dia10+dia11+dia12+dia13 + \

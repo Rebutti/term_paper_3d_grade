@@ -178,6 +178,16 @@ def rentabel(sheetfile1, sheetfile2, savesheet, ser_nav_nav, ser_zar_plat, ESV, 
         minus_hours = 0
     L = navantaj(sheetfile1=sheetfile1, values=values,
                  kil_stud=E, sheet=sheet, course=course[1], minus_hours=minus_hours)
+    if L == "Не вийшло знайти поле 'Разом за вибірковими компонентами'":
+        print(L)
+        sg.popup(
+            f'{L}')
+        return None
+    elif L == "Перевірте дані у стовбчику 14":
+        print(L)
+        sg.popup(
+            f'{L}')
+        return None
     try:
         if L[1] == "Error":
             sg.popup(L[0]+': '+str(sheetfile1.title))

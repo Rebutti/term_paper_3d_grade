@@ -2,6 +2,7 @@ import openpyxl
 from navantaj import toFixed, navantaj, findlpl, find_vibir_disc, findgtype, find_atec_ex, findatect
 from rentabel import findcourse
 import math
+import xlwings as xw
 
 def split_filename(filename):
     return filename.split('.')[0]
@@ -11,6 +12,7 @@ def count_price_file_open(filepathes, values):
     result_message = 'Результати збережені у файли:\n'
     for filepath1 in filepathes:
         counts = []
+        print(filepath1)
         file1 = openpyxl.open(filepath1,
                             read_only=True, data_only=True)  # открываем файл
         sheetsfile1 = file1.sheetnames  # запоминаю все листы в файле
@@ -30,6 +32,7 @@ def count_price_file_open(filepathes, values):
         for sheet in sheetsfile1:
             sheetfile1 = file1[sheet]
             result = count_price(sheetfile1, values=values, file_save=file_save, sheet_name=sheet_names[sheet_number])
+            print(sheet_names[sheet_number])
             sheet_number+=1
             counts.append(result)
         
@@ -39,7 +42,116 @@ def count_price_file_open(filepathes, values):
         file_save.save(new_filename)
         file1.close()
         result_message = result_message + new_filename+'\n'
+        file_save.close()
+        file_save1 = xw.Book(new_filename)
+        gradation_of_salary(file_save1, values)
+        file_save1.save()
+        file_save1.close()
     return result_message
+
+def gradation_of_salary(file, values):
+    sheet_name = 'загальна вартість'
+    sheet = file.sheets[sheet_name]
+    amount_of_budgets, price_of_budget, navantajenya = find_profit_by_budget(sheet)
+    price_for_budget = sheet['H3'].value
+    price_for_contract = sheet['I3'].value
+    print(f"кількість студентів бюджету для рентабельності = {amount_of_budgets, price_of_budget}, HPP = {values['НПП_витрати']}")
+    sheet_name = 'рен групи'
+    sheet = file.sheets[sheet_name]
+    sheet['A4'].value = float(values['НПП_витрати'])/100
+    sheet['B4'].value = amount_of_budgets
+    sheet['C4'].value = toFixed(price_of_budget, 2)
+    sheet['D7'].value = price_for_budget
+    cell = sheet.range('D7')
+    cell.api.Borders.Weight = 2
+    sheet['E7'].value = price_for_contract
+    cell = sheet.range('E7')
+    cell.api.Borders.Weight = 2
+    build_gradation(sheet, amount_of_budgets)
+    sheet = file.sheets['ціноутворення']
+    build_summary_data(sheet, values, amount_of_budgets, price_of_budget)
+    # print(values)
+
+    return None
+
+def get_collumn_by_index(column_index):
+    if column_index > 26:
+        integer = column_index % 26 
+        remainder = column_index // 26 
+        if remainder > 26:
+            return None
+        column_letter = chr(64 + integer)+chr(64 + remainder)
+    column_letter = chr(64 + column_index)
+    return column_letter
+
+def build_summary_data(sheet, values, amount_of_budgets, price_of_budget):
+    letter = 'B'
+    number = 5
+    npp_value = int(values['НПП_витрати'])
+    sheet['B'+str(number)].value = npp_value/100
+    values['НПП_витрати1'] = npp_value
+    # npp_bills = npp_counter(values, navantajenya)
+    # all_bills = bill_counter(values, npp_bills)
+    sheet['C'+str(number)].value = toFixed(amount_of_budgets, 2)
+    sheet['D'+str(number)].value = toFixed(price_of_budget, 2)
+    fst_pstn_for_contract = 8
+    fst_pstn_for_budget = 5
+    c_flag = False
+    for step_b in range(int(values['ціноутв_мін_б']), int(values['ціноутв_макс_б'])+1, int(values['бюдж_крок'])):
+        sheet['G'+str(fst_pstn_for_budget)].value = step_b
+        cell = sheet.range('G'+str(fst_pstn_for_budget))
+        cell.api.Borders.Weight = 2
+        for step_c in range(int(values['ціноутв_мін_к']), int(values['ціноутв_макс_к'])+1, int(values['контр_крок'])):
+            letter = get_collumn_by_index(fst_pstn_for_contract)
+            if c_flag == False:
+                sheet[letter+'4'].value = step_c
+            cell = sheet.range(letter+'4')
+            cell.api.Borders.Weight = 2
+            cell = sheet.range(letter+str(fst_pstn_for_budget))
+            cell.api.Borders.Weight = 2
+            cell.number_format = '0.00'
+            # =($C$5*$C$3-$G5*$C$3)/H$4
+            fst_pstn_for_contract +=1
+            sheet[letter+str(fst_pstn_for_budget)].value = '=($C$5*$C$3-$G'+str(fst_pstn_for_budget)+'*$C$3)/'+letter+'$4'
+        if amount_of_budgets-1 <= step_b:
+            break
+        c_flag = True
+        fst_pstn_for_contract = 8
+        fst_pstn_for_budget +=1
+
+    # number +=1
+
+def build_gradation(sheet, amount_of_budgets):
+    letter = 'B'
+    number = 7
+    formula_first_part = '=ЕСЛИ(ОКРВВЕРХ(($D$4-B'
+    formula_second_part = '*$D$7)/$E$7,1) <= 0, 0, ОКРВВЕРХ(($D$4-B'
+    formula_last_part = '*$D$7)/$E$7,1))'
+
+    # =ЕСЛИ(ОКРВВЕРХ(($D$4-B7*$D$7)/$E$7,1) <= 0, 0, ОКРВВЕРХ(($D$4-B7*$D$7)/$E$7,1))
+    for student in range(0, amount_of_budgets+1):
+        cell = sheet.range('B'+str(number))
+        cell.api.HorizontalAlignment = xw.constants.HAlign.xlHAlignCenter
+        cell.api.VerticalAlignment = xw.constants.VAlign.xlVAlignCenter
+        cell.api.Borders.Weight = 2
+        sheet['B'+str(number)].value = student
+        sheet['C'+str(number)].value = formula_first_part+str(number)+formula_second_part+str(number)+formula_last_part
+        # cell.api.HorizontalAlignment = xw.constants.HAlign.xlHAlignCenter
+        # cell.api.VerticalAlignment = xw.constants.VAlign.xlVAlignCenter
+        number+=1
+
+def find_profit_by_budget(sheet):
+    budget_price = sheet.range('H3').value
+    letter = 'G'
+    number = 3
+    for cell1 in range(1,91):
+        if sheet.range(letter+str(number)).value <= budget_price:
+            return int(sheet.range('A'+str(number)).value), sheet.range(letter+str(number)).value, sheet.range('C'+str(number)).value 
+        else:
+            number+=1
+    return 90, 50000
+
+
 
 
 def amount_of_groups_counter(amount_of_students, D1coeff):
@@ -117,7 +229,7 @@ def npp_counter(values, navantaj):
 
 
 def bill_counter(values, npp_bills):
-    return toFixed(npp_bills/float(values['НПП_витрати1'])*100, 2)
+    return toFixed(npp_bills/(float(values['НПП_витрати1']))*100, 2)
 
 def find_vir_pr(sheetfile1, start_row):
     letter = 'B'
@@ -241,9 +353,11 @@ def count_price(sheetfile1, values, file_save, sheet_name):
         k_pot_kons = 1
 
     file_save_sheet = file_save[sheet_name]
-    if values['separate'] == True:
-        print('tyt')
+    if values['separate_budget'] == True:
+        print('tytb')
         values['бюджет'] = get_price_for_budget(sheet_name, values)
+    if values['separate_contract'] == True:
+        print('tytc')
         values['контракт'] = get_price_for_contract(sheet_name, values)
     file_save_sheet['AB2'] = float(values['бюджет'])
     file_save_sheet['AC2'] = float(values['контракт'])

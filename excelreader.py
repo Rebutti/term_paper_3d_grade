@@ -68,6 +68,7 @@ def reader(values: dict):
         sheetfile1 = file1[sheet]
         rentabel(sheetfile1, sheetfile2, savesheet, ser_nav_nav,
                  ser_zar_plat, ESV, pev_vel, sheet, values=values)
+        
     if values["filetrue"] == True:
         savebook.save(values['dop_file'])
     else:

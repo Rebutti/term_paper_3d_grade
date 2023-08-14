@@ -167,19 +167,50 @@ def main():
                           ), sg.FilesBrowse(button_text="Переглянути", size=(10, 1), file_types=(("MIDI files", "*.xlsx"),), key="plan_vart")],
             [sg.Text('К(НПП_витрати):'),
              sg.InputText(values['НПП_витрати'], size=(5, 1),
-                          do_not_clear=True, key='НПП_витрати')],
-            [sg.Text('Ціна бюджету:'),
+                          do_not_clear=True, key='НПП_витрати'),
+            sg.Text('Крок НПП:'),
+             sg.InputText(values['НПП_крок'], size=(5, 1),
+                          do_not_clear=True, key='НПП_крок')],
+            
+            [sg.Text('Діапазон для НПП:'),
+            sg.Slider(range=(int(values['НПП_витрати']), 100), default_value=int(values['НПП_витрати']),
+            expand_x=True, enable_events=False,
+            orientation='horizontal', key='НПП_діапазон')],
+
+            [sg.Text('Кількість студентів бюджет:')],
+            [sg.Text('від:'),
+            sg.InputText(values['ціноутв_мін_б'], size=(5, 1),
+                          do_not_clear=True, key='ціноутв_мін_б'),
+            sg.Text('до:'),
+             sg.InputText(values['ціноутв_макс_б'], size=(5, 1),
+                          do_not_clear=True, key='ціноутв_макс_б'),
+            sg.Text('крок:'),
+             sg.InputText(values['бюдж_крок'], size=(5, 1),
+                          do_not_clear=True, key='бюдж_крок')
+            ],
+
+            [sg.Text('Кількість студентів контракт:')],
+            [sg.Text('від:'),
+            sg.InputText(values['ціноутв_мін_к'], size=(5, 1),
+                          do_not_clear=True, key='ціноутв_мін_к'),
+            sg.Text('до:'),
+             sg.InputText(values['ціноутв_макс_к'], size=(5, 1),
+                          do_not_clear=True, key='ціноутв_макс_к'),
+            sg.Text('крок:'),
+             sg.InputText(values['контр_крок'], size=(5, 1),
+                          do_not_clear=True, key='контр_крок')
+            ],
+            
+            
+
+            [sg.Column([[sg.Text('Ціна бюджету:'),
              sg.InputText(values['бюджет'], size=(10, 1),
                           do_not_clear=True, key='бюджет')],
-            [sg.Text('Ціна контракту:'),
-             sg.InputText(values['контракт'], size=(10, 1),
-                          do_not_clear=True, key='контракт')],
-            [sg.Text('Окремі ціни?')],
+            [sg.Text('Окремі ціни бюджет:')],
                        [sg.Radio('Так',
-                                 "RADIO2", default=False, key="separate"),
+                                 "RADIO_бюджет", default=False, key="separate_budget"),
                        sg.Radio('Ні',
-                                "RADIO2", default=True)],
-            [sg.Text('1 курс бюджет:'),
+                                "RADIO_бюджет", default=True)],[sg.Text('1 курс бюджет:'),
              sg.InputText(values['бюджет1'], size=(10, 1),
                           do_not_clear=True, key='бюджет1')],
             [sg.Text('2 курс бюджет:'),
@@ -195,8 +226,15 @@ def main():
              sg.InputText(values['бюджет5'], size=(10, 1),
                           do_not_clear=True, key='бюджет5')],
             [sg.Text('6 курс бюджет:'),
-             sg.InputText(values['бюджет6'], size=(10, 1),
-                          do_not_clear=True, key='бюджет6')],
+             sg.InputText(values['бюджет6'], size=(10, 1),                       do_not_clear=True, key='бюджет6')]], element_justification='c'),
+            sg.Column([[sg.Text('Ціна контракту:'),
+             sg.InputText(values['контракт'], size=(10, 1),
+                          do_not_clear=True, key='контракт')],
+            [sg.Text('Окремі ціни контракт:')],
+                       [sg.Radio('Так',
+                                 "RADIO_контракт", default=False, key="separate_contract"),
+                       sg.Radio('Ні',
+                                "RADIO_контракт", default=True)],
             [sg.Text('1 курс контракт:'),
              sg.InputText(values['контракт1'], size=(10, 1),
                           do_not_clear=True, key='контракт1')],
@@ -214,7 +252,9 @@ def main():
                           do_not_clear=True, key='контракт5')],
             [sg.Text('6 курс контракт:'),
              sg.InputText(values['контракт6'], size=(10, 1),
-                          do_not_clear=True, key='контракт6')],
+                          do_not_clear=True, key='контракт6')]], element_justification='c' ), 
+            ],
+
 
             [sg.Submit("Підтвердити", key='count_vartist'),
              sg.Cancel("Відмінити", key="cancel")],
@@ -259,7 +299,7 @@ def main():
         if flag == 1:
             flag = 0
             for k, v in values.items():
-                if k == 4 or k == 5 or k == "Переглянути" or k == "Переглянути0" or k == 6 or k == 9 or k == 7 or k == 8 or k == "dop_file" or k == "plan_vart":
+                if k == 4 or k == 5 or k == "Переглянути" or k == "Переглянути0" or k == 6 or k == 9 or k == 7 or k == 8 or k == "dop_file" or k == "plan_vart" or k == 11:
                     flag = 1
                     if k == 4 or k == 5 or k == "Переглянути":
                         a = Path(v)
@@ -273,6 +313,7 @@ def main():
                     try:
                         v = (float(v))
                     except:
+                        print(values)
                         sg.popup('Ви ввели некоректні данні: ', v)
                         flag = 0
                         break
